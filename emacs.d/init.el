@@ -13,10 +13,8 @@
 (load custom-file 'noerror)
 
 ;; TODO
-;; - auto enable server-start (lazily?)
 ;; - persist search highlight, https://github.com/juanjux/evil-search-highlight-persist
 ;; - figure out visualstar and visual selection weirdness
-;; - add some sort of file browser
 
 ;; probably lots to learn from https://github.com/cbowdon/Config/blob/master/emacs/init.org
 
@@ -41,10 +39,12 @@
   (load-theme 'gruvbox-dark-hard t))
 
 ;; General emacs customisation
+(server-start)
 (menu-bar-mode -1)
 (toggle-scroll-bar -1)
 (tool-bar-mode -1)
 (subword-mode t)
+(global-hl-line-mode t)
 (setq-default
  indent-tabs-mode nil
  display-line-numbers 'relative
@@ -71,8 +71,6 @@
   (projectile-mode +1)
   (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map))
 
-(use-package avy)
-
 ;; Evil
 (setq evil-want-C-u-scroll t)
 (use-package evil
@@ -82,12 +80,23 @@
   (install-evil-deps)
   (evil-mode t))
 
+;; Navigation
+(use-package neotree
+  :init
+  (setq neo-smart-open t)
+  :config
+  (neotree-evil-config))
+
+(use-package ace-window
+  :config
+  (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)))
+
 ;; Javascript
 (use-package vue-mode
   :init
   (add-hook 'mmm-mode-hook
-	    (lambda ()
-	      (set-face-background 'mmm-default-submode-face nil))))
+            (lambda ()
+              (set-face-background 'mmm-default-submode-face nil))))
 
 
 ;; Markdown

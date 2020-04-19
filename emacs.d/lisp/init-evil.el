@@ -11,13 +11,15 @@
    evil-vsplit-window-right t)
   (define-key evil-normal-state-map (kbd "C-b") 'helm-buffers-list)
   (define-key evil-normal-state-map (kbd "C-f") 'smart-find-files)
+  (define-key evil-motion-state-map "j" 'evil-next-visual-line)
+  (define-key evil-motion-state-map "k" 'evil-previous-visual-line)
   )
 
 (defun do-evil-leader-config ()
   (setq evil-leader/in-all-states t)
   (evil-leader/set-leader "<SPC>")
   (global-evil-leader-mode)
-  (evil-leader/set-key "<SPC>" 'evil-window-next)
+  (evil-leader/set-key "<SPC>" 'ace-window)
   (evil-leader/set-key "/" 'comment-line)
   (evil-leader/set-key "g" 'helm-projectile-ag)
   ;; buffers
@@ -33,13 +35,17 @@
   (evil-leader/set-key "s l" 'avy-goto-line)
   (evil-leader/set-key "s w" 'avy-goto-word-0)
   (evil-leader/set-key "s W" 'avy-goto-word-1)
+  ;; nav
+  (evil-leader/set-key "n f" 'neotree-find)
+  (evil-leader/set-key "n q" 'neotree-hide)
   ;; projects
   (evil-leader/set-key "p f" 'helm-projectile-find-file)
   ;; windows
   (evil-leader/set-key "w h" 'evil-window-left)
   (evil-leader/set-key "w j" 'evil-window-down)
   (evil-leader/set-key "w k" 'evil-window-up)
-  (evil-leader/set-key "w l" 'evil-window-right))
+  (evil-leader/set-key "w l" 'evil-window-right)
+  )
 
 (defun install-evil-deps ()
   (use-package evil-leader
@@ -59,5 +65,18 @@
 
   (use-package avy)
   )
+
+(defun neotree-evil-config ()
+  (evil-define-key 'normal neotree-mode-map (kbd "TAB") 'neotree-enter-ace-window)
+  (evil-define-key 'normal neotree-mode-map (kbd "SPC") 'neotree-quick-look)
+  (evil-define-key 'normal neotree-mode-map (kbd "q") 'neotree-hide)
+  (evil-define-key 'normal neotree-mode-map (kbd "RET") 'neotree-enter)
+  (evil-define-key 'normal neotree-mode-map (kbd "g") 'neotree-refresh)
+  (evil-define-key 'normal neotree-mode-map (kbd "|") 'neotree-enter-vertical-split)
+  (evil-define-key 'normal neotree-mode-map (kbd "-") 'neotree-enter-horizontal-split)
+  (evil-define-key 'normal neotree-mode-map (kbd "n") 'neotree-next-line)
+  (evil-define-key 'normal neotree-mode-map (kbd "p") 'neotree-previous-line)
+  (evil-define-key 'normal neotree-mode-map (kbd "A") 'neotree-stretch-toggle)
+  (evil-define-key 'normal neotree-mode-map (kbd "H") 'neotree-hidden-file-toggle))
 
 (provide 'init-evil)
