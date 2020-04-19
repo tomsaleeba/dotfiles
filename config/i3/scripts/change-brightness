@@ -1,0 +1,34 @@
+#!/bin/bash
+# changes the brightness of the display
+set -euxo pipefail
+
+direction=${1:-}
+
+cd /sys/class/backlight/intel_backlight
+brightnessActual=`cat actual_brightness`
+
+if [ "$direction" == "up" ]; then
+  lightArg="-A"
+  brightnessLimit=`cat max_brightness`
+  isBrightnessAtLimit=`[ "$brightnessActual" -ge "$brightnessLimit" ] && echo yes || echo nope`
+  brightnessLimitLabel=MAX
+elif [ "$direction" == "down" ]; then
+  lightArg="-U"
+  brightnessLimit=244
+  isBrightnessAtLimit=`[ "$brightnessActual" -le "$brightnessLimit" ] && echo yes || echo nope`
+  brightnessLimitLabel=MIN
+else
+  echo "[ERROR] param 1 must be {up|down}"
+  exit 127
+fi
+
+([ "$isBrightnessAtLimit" == "yes" ] \
+    && {
+      notify-send "brightness $brightnessLimitLabel"
+      exit 0
+    } || {
+      # Screen brightness controls with notification, thanks https://cialu.net/brightness-control-not-work-i3wm/
+      light $lightArg 5 || notify-send "brightness change failed"
+      notify-send "brightness $direction"
+    }) \
+  || notify-send "reading current brightness failed"

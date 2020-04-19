@@ -1,0 +1,6 @@
+#!/bin/bash
+# thanks https://www.reddit.com/r/thinkpad/comments/6ussw3/x1_carbon_gen_5_owners_disabling_touchpad_linux/dlvqy0v
+trackpadDeviceId=13
+deviceEnabledSettingId=169
+disabled=0
+xinput set-prop $trackpadDeviceId $deviceEnabledSettingId $disabled

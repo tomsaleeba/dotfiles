@@ -1,0 +1,10 @@
+rofi.theme: /usr/share/rofi/themes/gruvbox-dark-soft.rasi
+
+# config to use termite for ssh, which needs the quotes around the command
+# thanks https://github.com/davatorium/rofi/issues/183#issuecomment-129828996
+# but nothing supports termite so we'll use another terminal
+#rofi.ssh-command:          {terminal} -e "{ssh-client} {host}"
+
+# run zsh in interactive mode so our ssh-agent hook function is used
+rofi.ssh-command:          terminology -e 'zsh -i -c "ssh {host}; zsh"'
+

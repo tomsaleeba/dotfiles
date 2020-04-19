@@ -15,6 +15,8 @@
 ;; TODO
 ;; - persist search highlight, https://github.com/juanjux/evil-search-highlight-persist
 ;; - figure out visualstar and visual selection weirdness
+;; - show number of find matches
+;; - figure out key mapping for helm to open in vertical split
 
 ;; probably lots to learn from https://github.com/cbowdon/Config/blob/master/emacs/init.org
 
