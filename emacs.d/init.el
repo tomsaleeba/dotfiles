@@ -132,10 +132,16 @@
 	      ("M-H" . helm-end-of-buffer))
   :config (progn
 	    (setq helm-buffers-fuzzy-matching t)
+            (setq helm-split-window-preferred-function 'ignore)
             (helm-mode 1)))
 
 (use-package helm-ag)
 (use-package helm-projectile)
+
+(use-package popwin
+  :config
+  (popwin-mode 1)
+  (push '("^\*helm .+\*$" :regexp t) popwin:special-display-config))
 
 ; my functions
 (defun init-file ()

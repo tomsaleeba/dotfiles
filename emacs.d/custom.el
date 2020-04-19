@@ -6,7 +6,7 @@
  '(helm-completion-style (quote emacs))
  '(package-selected-packages
    (quote
-    (evil-surround rainbow-delimiters helm-projectile which-key vue-mode use-package telephone-line projectile paredit markdown-mode helm-ag gruvbox-theme evil-visualstar evil-visual-mark-mode evil-leader evil-god-state evil-easymotion clojure-mode))))
+    (popwin evil-surround rainbow-delimiters helm-projectile which-key vue-mode use-package telephone-line projectile paredit markdown-mode helm-ag gruvbox-theme evil-visualstar evil-visual-mark-mode evil-leader evil-god-state evil-easymotion clojure-mode))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
