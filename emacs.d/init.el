@@ -155,5 +155,4 @@
   (interactive)
   (if (projectile-project-p)
       (helm-projectile-find-file)
-    (helm-find-files "/home/tom/"))) ; FIXME would be nice if it used (pwd), but that doesn't work
-    ;; (helm-find-files (pwd))))
+    (helm-find-files nil)))
