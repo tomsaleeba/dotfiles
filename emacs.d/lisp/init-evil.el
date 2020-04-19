@@ -28,7 +28,7 @@
   (evil-leader/set-key "f e d" 'find-init-file)
   (evil-leader/set-key "f e R" 'reload-init-file)
   ;; motions
-  (evil-leader/set-key "s s" 'avy-goto-char) ; FIXME these aren't working "evil-avy-goto-char: Wrong type argument: commandp, avy-goto-char"
+  (evil-leader/set-key "s s" 'avy-goto-char)
   (evil-leader/set-key "s S" 'avy-goto-char-2)
   (evil-leader/set-key "s l" 'avy-goto-line)
   (evil-leader/set-key "s w" 'avy-goto-word-0)
@@ -56,6 +56,8 @@
   (use-package evil-surround
     :config
     (global-evil-surround-mode t))
+
+  (use-package avy)
   )
 
 (provide 'init-evil)

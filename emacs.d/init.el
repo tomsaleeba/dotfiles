@@ -14,13 +14,7 @@
 
 ;; TODO
 ;; - auto enable server-start (lazily?)
-;; - zt and zb have a few lines of padding (scrolloff)
 ;; - persist search highlight, https://github.com/juanjux/evil-search-highlight-persist
-;; - camel case word navigation
-;; - make help open in a new split
-;; - add quick buffer list
-;; - get projectile prefix group on leader
-;; - add leader shortcut for last buffer
 ;; - figure out visualstar and visual selection weirdness
 ;; - add some sort of file browser
 
@@ -50,6 +44,7 @@
 (menu-bar-mode -1)
 (toggle-scroll-bar -1)
 (tool-bar-mode -1)
+(subword-mode t)
 (setq-default
  indent-tabs-mode nil
  display-line-numbers 'relative
@@ -58,6 +53,7 @@
 (setq make-backup-files nil
       create-lockfiles nil
       vc-follow-symlinks nil ;; thanks https://stackoverflow.com/a/30900018/1410035
+      scroll-margin 3
       )
 
 (global-set-key (kbd "C-x .") 'find-init-file)
@@ -74,6 +70,8 @@
   :config
   (projectile-mode +1)
   (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map))
+
+(use-package avy)
 
 ;; Evil
 (setq evil-want-C-u-scroll t)
