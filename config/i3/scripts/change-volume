@@ -1,0 +1,15 @@
+#!/bin/bash
+# changes volume by a step amount based on the current volume
+
+direction=${1:?must be "up" or "down"}
+threshold=25
+currVol=$(pulseaudio-ctl full-status | cut -f1 -d ' ')
+[ $currVol -le $threshold ] && {
+  step=3
+  echo "Changing volume $direction by $step"
+  pulseaudio-ctl $direction $step
+} || {
+  step=5
+  echo "Changing volume $direction by $step"
+  pulseaudio-ctl $direction $step
+}
