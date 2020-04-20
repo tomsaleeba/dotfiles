@@ -2,14 +2,26 @@
 # changes volume by a step amount based on the current volume
 
 direction=${1:?must be "up" or "down"}
-threshold=25
+threshold=30
+bigStep=5
+smallStep=3
+
 currVol=$(pulseaudio-ctl full-status | cut -f1 -d ' ')
-[ $currVol -le $threshold ] && {
-  step=3
+
+if [ $currVol -eq $threshold ]; then
+  if [ "$direction" = "up" ]; then
+    step=$bigStep
+  else # down
+    step=$smallStep
+  fi
+  echo "[Equal threshold] Changing volume $direction by $step"
+  pulseaudio-ctl $direction $step
+elif [ $currVol -lt $threshold ]; then
+  step=$smallStep
   echo "Changing volume $direction by $step"
   pulseaudio-ctl $direction $step
-} || {
-  step=5
+else
+  step=$bigStep
   echo "Changing volume $direction by $step"
   pulseaudio-ctl $direction $step
-}
+fi
