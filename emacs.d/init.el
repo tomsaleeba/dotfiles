@@ -7,6 +7,7 @@
 
 (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
 (require 'init-evil)
+(require 'init-helm)
 
 ;; Don't litter my init file
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
@@ -17,6 +18,8 @@
 ;; - figure out visualstar and visual selection weirdness
 ;; - show number of find matches
 ;; - figure out key mapping for helm to open in vertical split
+;; - get neotree to have once instance per frame
+;; - replace selection
 
 ;; probably lots to learn from https://github.com/cbowdon/Config/blob/master/emacs/init.org
 
@@ -145,7 +148,11 @@
             (helm-mode 1)))
 
 (use-package helm-ag)
-(use-package helm-projectile)
+(use-package helm-projectile
+  :after (helm)
+  :config
+  (bind-extra-helm-actions)
+  )
 
 (use-package popwin
   :config
