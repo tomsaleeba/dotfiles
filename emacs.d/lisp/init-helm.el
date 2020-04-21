@@ -1,11 +1,20 @@
 (defun bind-extra-helm-actions ()
   "Binds my extra helm actions"
 
+  (defun tom/select-window ()
+    (if (> (count-windows) 1)
+        (let ((aw-dispatch-always t))
+          (ace-select-window))
+      (ace-select-window))
+    )
+
   ;; buffer - select
   (defun helm-buffer-ace-window-select (buffer)
     ;; thanks https://emacs.stackexchange.com/a/17082/28461
+    ;; although it seems that we don't need to bind projectile keys like the post says
+    ;; should we use the helm-find-files-after-init-hook as mentioned in https://occasionallycogent.com/emacs_custom_helm_actions/index.html ?
     "Use ‘ace-window’ to select a window for BUFFER."
-    (ace-select-window)
+    (tom/select-window)
     (switch-to-buffer buffer))
 
   (add-to-list 'helm-type-buffer-actions
@@ -23,7 +32,7 @@
   ;; buffer - split-right
   (defun helm-buffer-ace-window-split-right (buffer)
     "Use ‘ace-window’ to select a window to split-right the BUFFER."
-    (ace-select-window)
+    (tom/select-window)
     (select-window (split-window-right))
     (switch-to-buffer buffer))
 
@@ -42,7 +51,7 @@
   ;; buffer - split-below
   (defun helm-buffer-ace-window-split-below (buffer)
     "Use ‘ace-window’ to select a window to split-below the BUFFER."
-    (ace-select-window)
+    (tom/select-window)
     (select-window (split-window-below))
     (switch-to-buffer buffer))
 
@@ -61,7 +70,7 @@
   ;; find-files - select
   (defun helm-find-files-ace-window-select (the-file)
     "Use ‘ace-window’ to select a window for FILE."
-    (ace-select-window)
+    (tom/select-window)
     (find-file the-file))
 
   (add-to-list 'helm-find-files-actions
@@ -73,10 +82,46 @@
     (with-helm-alive-p
       (helm-exit-and-execute-action 'helm-find-files-ace-window-select)))
 
-  ;; FIXME these keys seem to be bound in the value dump in help, but they don't work
   (define-key helm-find-files-map (kbd "C-c w") #'helm-find-files-run-ace-window-select)
-  (define-key helm-projectile-find-file-map (kbd "C-c w") #'helm-find-files-run-ace-window-select)
-  )
 
+
+  ;; find-files  - split-right
+  (defun helm-find-files-ace-window-split-right (the-file)
+    "Use ‘ace-window’ to select a window to split-right the FILE."
+    (tom/select-window)
+    (select-window (split-window-right))
+    (find-file the-file))
+
+  (add-to-list 'helm-find-files-actions
+               '("Split-right file in Ace window ‘C-c v'" . helm-find-files-ace-window-split-right)
+               :append)
+
+  (defun helm-find-files-run-ace-window-split-right ()
+    (interactive)
+    (with-helm-alive-p
+      (helm-exit-and-execute-action 'helm-find-files-ace-window-split-right)))
+
+  (define-key helm-find-files-map (kbd "C-c v") #'helm-find-files-run-ace-window-split-right)
+
+
+  ;; find-files - split-below
+  (defun helm-find-files-ace-window-split-below (the-file)
+    "Use ‘ace-window’ to select a window to split-below the FILE."
+    (tom/select-window)
+    (select-window (split-window-below))
+    (find-file the-file))
+
+  (add-to-list 'helm-find-files-actions
+               '("Split-below file in Ace window ‘C-c s'" . helm-find-files-ace-window-split-below)
+               :append)
+
+  (defun helm-find-files-run-ace-window-split-below ()
+    (interactive)
+    (with-helm-alive-p
+      (helm-exit-and-execute-action 'helm-find-files-ace-window-split-below)))
+
+  (define-key helm-find-files-map (kbd "C-c s") #'helm-find-files-run-ace-window-split-below)
+
+  )
 
 (provide 'init-helm)

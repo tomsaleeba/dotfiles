@@ -20,6 +20,7 @@
 ;; - figure out key mapping for helm to open in vertical split
 ;; - get neotree to have once instance per frame
 ;; - replace selection
+;; - make ace-window always prompt for window selection when using C-c bindings
 
 ;; probably lots to learn from https://github.com/cbowdon/Config/blob/master/emacs/init.org
 
@@ -73,7 +74,7 @@
 
 (use-package projectile
   :config
-  (projectile-mode +1)
+  (projectile-mode t)
   (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map))
 
 ;; Evil
@@ -145,13 +146,14 @@
   :config (progn
 	    (setq helm-buffers-fuzzy-matching t)
             (setq helm-split-window-preferred-function 'ignore)
-            (helm-mode 1)))
+            (helm-mode 1)
+            (bind-extra-helm-actions)))
 
 (use-package helm-ag)
 (use-package helm-projectile
   :after (helm)
-  :config
-  (bind-extra-helm-actions)
+  ;; :config
+  ;; (bind-extra-helm-actions)
   )
 
 (use-package popwin
