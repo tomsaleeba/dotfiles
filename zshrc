@@ -73,7 +73,6 @@ plugins=(git zsh-autosuggestions zsh-z)
 # git clone https://github.com/agkozak/zsh-z ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-z
 # git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
 
-
 source $ZSH/oh-my-zsh.sh
 
 # User configuration
@@ -209,18 +208,20 @@ for dump in ~/.zcompdump(N.mh+24); do
 done
 compinit -C
 
-# add timestamp and execution time to the right prompt, thanks https://coderwall.com/p/kmchbw/zsh-display-commands-runtime-in-prompt
-function preexec() {
-  timer=${timer:-$SECONDS}
-}
-function precmd() {
-  if [ $timer ]; then
-    timer_show=$(($SECONDS - $timer))
-    # thanks for the time layout https://stackoverflow.com/a/48341347/1410035
-    export RPROMPT="%F{cyan}${timer_show}s %{$fg[yellow]%}[%D{%H:%M:%S} %D] %{$reset_color%}"
-    unset timer
-  fi
-}
+if [ -z $INSIDE_EMACS ]; then # emacs gets messed up with a right side of the prompt
+  # add timestamp and execution time to the right prompt, thanks https://coderwall.com/p/kmchbw/zsh-display-commands-runtime-in-prompt
+  function preexec() {
+    timer=${timer:-$SECONDS}
+  }
+  function precmd() {
+    if [ $timer ]; then
+      timer_show=$(($SECONDS - $timer))
+      # thanks for the time layout https://stackoverflow.com/a/48341347/1410035
+      export RPROMPT="%F{cyan}${timer_show}s %{$fg[yellow]%}[%D{%H:%M:%S} %D] %{$reset_color%}"
+      unset timer
+    fi
+  }
+fi
 
 # change word navigation to treat hyphens like I want
 # thanks https://unix.stackexchange.com/a/48589/68885
