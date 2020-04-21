@@ -17,10 +17,8 @@
 ;; - persist search highlight, https://github.com/juanjux/evil-search-highlight-persist
 ;; - figure out visualstar and visual selection weirdness
 ;; - show number of find matches
-;; - figure out key mapping for helm to open in vertical split
 ;; - get neotree to have once instance per frame
 ;; - replace selection
-;; - make ace-window always prompt for window selection when using C-c bindings
 
 ;; probably lots to learn from https://github.com/cbowdon/Config/blob/master/emacs/init.org
 
@@ -76,6 +74,11 @@
   :config
   (projectile-mode t)
   (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map))
+
+(use-package drag-stuff
+  :config
+  (drag-stuff-global-mode t)
+  (drag-stuff-define-keys))
 
 ;; Evil
 (setq evil-want-C-u-scroll t)

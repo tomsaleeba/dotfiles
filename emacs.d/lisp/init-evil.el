@@ -1,10 +1,6 @@
 (defun do-evil-config ()
-  ;; in vim, backtick remembers the col after a :move, evil doesn't
-  ;; TODO should be  "mz :m+ <return> `z"
-  (define-key evil-normal-state-map (kbd "M-j") (kbd ":m+ <return>"))
-  ;; TODO should be  "mz :m-2 <return> `z"
-  (define-key evil-normal-state-map (kbd "M-k") (kbd ":m-2 <return>"))
-  ;; FIXME vmap <M-j> :m'>+<cr>`<my`>mzgv`yo`z
+  (define-key evil-normal-state-map (kbd "M-j") 'drag-stuff-down)
+  (define-key evil-normal-state-map (kbd "M-k") 'drag-stuff-up)
   (setq
    ;; thanks https://github.com/emacs-evil/evil/issues/486#issuecomment-273754354
    evil-split-window-below t
@@ -30,6 +26,7 @@
   (evil-leader/set-key "f e d" 'find-init-file)
   (evil-leader/set-key "f e R" 'reload-init-file)
   ;; motions
+  (evil-leader/set-key "j" 'avy-goto-char)
   (evil-leader/set-key "s s" 'avy-goto-char)
   (evil-leader/set-key "s S" 'avy-goto-char-2)
   (evil-leader/set-key "s l" 'avy-goto-line)
@@ -45,6 +42,8 @@
   (evil-leader/set-key "w j" 'evil-window-down)
   (evil-leader/set-key "w k" 'evil-window-up)
   (evil-leader/set-key "w l" 'evil-window-right)
+  (evil-leader/set-key "w n" 'make-frame)
+  (evil-leader/set-key "w o" 'delete-other-windows)
   )
 
 (defun install-evil-deps ()
