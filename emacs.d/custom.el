@@ -23,7 +23,8 @@
  '(prettier-js-args
    (quote
     ("--single-quote" "--trailing-comma=all" "--arrow-parens=avoid" "--print-width=80" "--no-semi")))
- '(scroll-margin 3))
+ '(scroll-margin 3)
+ '(show-paren-mode t))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

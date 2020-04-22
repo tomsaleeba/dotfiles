@@ -116,6 +116,7 @@
   (add-hook 'mmm-mode-hook
             (lambda ()
               (set-face-background 'mmm-default-submode-face nil)))
+  (add-hook 'vue-mode-hook 'highlight-indent-guides-mode))
   :mode
   (("\\.vue\\'" . vue-mode)))
 
