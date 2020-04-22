@@ -81,7 +81,11 @@
   (global-set-key [remap query-replace] 'anzu-query-replace)
   (global-set-key [remap query-replace-regexp] 'anzu-query-replace-regexp))
 
-(use-package evil-anzu)
+(use-package highlight-indent-guides
+  ;; TODO can write own highlighter to try to make rainbows
+  ;; https://github.com/DarthFennec/highlight-indent-guides#custom-highlighter-function
+  :init
+  (add-hook 'prog-mode-hook 'highlight-indent-guides-mode))
 
 ;; Evil
 (use-package evil

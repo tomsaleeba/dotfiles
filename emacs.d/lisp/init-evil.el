@@ -66,6 +66,7 @@
     (global-evil-surround-mode t))
 
   (use-package avy)
+  (use-package evil-anzu)
   )
 
 (defun neotree-evil-config ()
