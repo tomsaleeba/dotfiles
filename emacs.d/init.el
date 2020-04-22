@@ -24,6 +24,7 @@
 ;; - https://github.com/noctuid/general.el for easier bindings?
 ;; - highlight trailing spaces (auto remove?)
 ;; - highlight yanked line
+;; - electric indent on vim 'S'
 
 ;; probably lots to learn from https://github.com/cbowdon/Config/blob/master/emacs/init.org
 
@@ -110,11 +111,14 @@
   :init
   (add-hook 'mmm-mode-hook
             (lambda ()
-              (set-face-background 'mmm-default-submode-face nil))))
+              (set-face-background 'mmm-default-submode-face nil)))
+  :mode
+  (("\\.vue\\'" . vue-mode)))
 
 (use-package prettier-js
   :init
   (add-hook 'js2-mode-hook 'prettier-js-mode)
+  (add-hook 'vue-mode-hook 'prettier-js-mode)
   (add-hook 'web-mode-hook 'prettier-js-mode))
 
 ;; Markdown
