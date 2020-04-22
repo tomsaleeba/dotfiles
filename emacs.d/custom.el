@@ -3,10 +3,20 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(create-lockfiles nil)
+ '(display-line-numbers (quote relative))
+ '(evil-want-C-u-scroll t)
+ '(exec-path
+   (quote
+    ("/home/tom/bin" "/home/tom/.local/bin" "/usr/local/bin" "/usr/bin" "/bin" "/usr/local/sbin" "/usr/lib/jvm/default/bin" "/usr/bin/site_perl" "/usr/bin/vendor_perl" "/usr/bin/core_perl" "/var/lib/snapd/snap/bin" "/usr/lib/emacs/26.3/x86_64-pc-linux-gnu")))
+ '(global-hl-line-mode t)
  '(helm-completion-style (quote emacs))
+ '(indent-tabs-mode nil)
+ '(make-backup-files nil)
  '(package-selected-packages
    (quote
-    (drag-stuff neotree avy popwin evil-surround rainbow-delimiters helm-projectile which-key vue-mode use-package telephone-line projectile paredit markdown-mode helm-ag gruvbox-theme evil-visualstar evil-visual-mark-mode evil-leader evil-god-state evil-easymotion clojure-mode))))
+    (evil-anzu anzu js2-mode prettier-js drag-stuff neotree avy popwin evil-surround rainbow-delimiters helm-projectile which-key vue-mode use-package telephone-line projectile paredit markdown-mode helm-ag gruvbox-theme evil-visualstar evil-visual-mark-mode evil-leader evil-god-state evil-easymotion clojure-mode)))
+ '(scroll-margin 3))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

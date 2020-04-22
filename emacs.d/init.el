@@ -5,20 +5,25 @@
         ("melpa-stable" . "https://stable.melpa.org/packages/")))
 (package-initialize)
 
-(add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
-(require 'init-evil)
-(require 'init-helm)
-
 ;; Don't litter my init file
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 (load custom-file 'noerror)
 
+(add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
+(require 'init-evil)
+(require 'init-helm)
+(require 'init-tom)
+
 ;; TODO
 ;; - persist search highlight, https://github.com/juanjux/evil-search-highlight-persist
 ;; - figure out visualstar and visual selection weirdness
-;; - show number of find matches
 ;; - get neotree to have once instance per frame
-;; - replace selection
+;; - prettier https://github.com/prettier/prettier-emacs
+;;      - do we bind to js2-mode or to vue-mode too?
+;;      - should I define exec-path in emacs or pull it from shell?
+;; - https://github.com/noctuid/general.el for easier bindings?
+;; - highlight trailing spaces (auto remove?)
+;; - highlight yanked line
 
 ;; probably lots to learn from https://github.com/cbowdon/Config/blob/master/emacs/init.org
 
@@ -44,21 +49,10 @@
 
 ;; General emacs customisation
 (server-start)
-(menu-bar-mode -1)
-(toggle-scroll-bar -1)
-(tool-bar-mode -1)
+(menu-bar-mode t)
+(toggle-scroll-bar t)
+(tool-bar-mode t)
 (subword-mode t)
-(global-hl-line-mode t)
-(setq-default
- indent-tabs-mode nil
- display-line-numbers 'relative
- )
-
-(setq make-backup-files nil
-      create-lockfiles nil
-      vc-follow-symlinks nil ;; thanks https://stackoverflow.com/a/30900018/1410035
-      scroll-margin 3
-      )
 
 (global-set-key (kbd "C-x .") 'find-init-file)
 
@@ -80,8 +74,15 @@
   (drag-stuff-global-mode t)
   (drag-stuff-define-keys))
 
+(use-package anzu
+  :config
+  (global-anzu-mode t)
+  (global-set-key [remap query-replace] 'anzu-query-replace)
+  (global-set-key [remap query-replace-regexp] 'anzu-query-replace-regexp))
+
+(use-package evil-anzu)
+
 ;; Evil
-(setq evil-want-C-u-scroll t)
 (use-package evil
   :demand
   :config
@@ -101,12 +102,20 @@
   (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)))
 
 ;; Javascript
+(use-package js2-mode
+  :mode
+  (("\\.js\\'" . js2-mode)))
+
 (use-package vue-mode
   :init
   (add-hook 'mmm-mode-hook
             (lambda ()
               (set-face-background 'mmm-default-submode-face nil))))
 
+(use-package prettier-js
+  :init
+  (add-hook 'js2-mode-hook 'prettier-js-mode)
+  (add-hook 'web-mode-hook 'prettier-js-mode))
 
 ;; Markdown
 (use-package markdown-mode)

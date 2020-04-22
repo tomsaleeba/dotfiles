@@ -37,6 +37,8 @@
   (evil-leader/set-key "n q" 'neotree-hide)
   ;; projects
   (evil-leader/set-key "p f" 'helm-projectile-find-file)
+  ;; replace
+  (evil-leader/set-key "r" 'tom/evil-replace-visual-selection-in-buffer)
   ;; windows
   (evil-leader/set-key "w h" 'evil-window-left)
   (evil-leader/set-key "w j" 'evil-window-down)
@@ -44,6 +46,7 @@
   (evil-leader/set-key "w l" 'evil-window-right)
   (evil-leader/set-key "w n" 'make-frame)
   (evil-leader/set-key "w o" 'delete-other-windows)
+  (evil-leader/set-key "w q" 'evil-quit)
   )
 
 (defun install-evil-deps ()
