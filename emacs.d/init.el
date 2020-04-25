@@ -41,7 +41,7 @@
 ;; Theme
 (if
     (member "Hack" (font-family-list))
-    (set-face-attribute 'default nil :font "Hack-12")
+    (set-face-attribute 'default nil :font "Hack-11")
   (set-face-attribute 'default nil :font "Source Code Pro-12"))
 
 (use-package gruvbox-theme
@@ -50,10 +50,6 @@
 
 ;; General emacs customisation
 (server-start)
-(menu-bar-mode t)
-(toggle-scroll-bar t)
-(tool-bar-mode t)
-(subword-mode t)
 
 (global-set-key (kbd "C-x .") 'find-init-file)
 
@@ -115,10 +111,10 @@
   :init
   (add-hook 'mmm-mode-hook
             (lambda ()
-              (set-face-background 'mmm-default-submode-face nil)))
-  (add-hook 'vue-mode-hook 'highlight-indent-guides-mode))
-  :mode
-  (("\\.vue\\'" . vue-mode)))
+              (set-face-background 'mmm-default-submode-face nil))
+            (highlight-indent-guides-mode) ;; FIXME not working, maybe use minor modes?
+            )
+  )
 
 (use-package prettier-js
   :init

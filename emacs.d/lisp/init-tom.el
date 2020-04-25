@@ -15,4 +15,21 @@
 
     (save-excursion
       (evil-ex (concat "%s/" escaped-the-selection "/")))))
+
+
+(defun tom/avy-goto-char-below (char)
+  "Jump to the currently visible CHAR below point in selected window."
+  (interactive (list (read-char "char: " t)))
+  (avy-with avy-goto-char
+    (avy-jump
+     (regexp-quote (string char))
+     :window-flip t
+     :beg (point)
+     :end (window-end (selected-window) t))))
+
+(defun find-notes-file ()
+  (interactive)
+  (find-file "~/.emacs.d/notes.org"))
+
+
 (provide 'init-tom)

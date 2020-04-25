@@ -25,8 +25,10 @@
   (evil-leader/set-key "f S" 'evil-write-all)
   (evil-leader/set-key "f e d" 'find-init-file)
   (evil-leader/set-key "f e R" 'reload-init-file)
+  (evil-leader/set-key "f n" 'find-notes-file)
   ;; motions
-  (evil-leader/set-key "j" 'avy-goto-char)
+  (evil-leader/set-key "j" 'tom/avy-goto-char-below)
+  (evil-leader/set-key "J" 'avy-goto-char)
   (evil-leader/set-key "s s" 'avy-goto-char)
   (evil-leader/set-key "s S" 'avy-goto-char-2)
   (evil-leader/set-key "s l" 'avy-goto-line)
@@ -35,6 +37,10 @@
   ;; nav
   (evil-leader/set-key "n f" 'neotree-find)
   (evil-leader/set-key "n q" 'neotree-hide)
+  ;; org mode
+  (evil-leader/set-key "o l" 'org-store-link)
+  (evil-leader/set-key "o a" 'org-agenda)
+  (evil-leader/set-key "o c" 'org-capture)
   ;; projects
   (evil-leader/set-key "p f" 'helm-projectile-find-file)
   ;; replace
