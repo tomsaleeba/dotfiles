@@ -1,0 +1,3 @@
+#!/bin/bash
+# thanks https://bbs.archlinux.org/viewtopic.php?pid=1804654#p1804654
+xset dpms force off

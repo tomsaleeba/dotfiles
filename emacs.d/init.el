@@ -25,6 +25,8 @@
 ;; - highlight trailing spaces (auto remove?)
 ;; - highlight yanked line
 ;; - electric indent on vim 'S'
+;; - avy only in current frame
+;; - :co-1 is off by one line when point is at bottom of selection
 
 ;; probably lots to learn from https://github.com/cbowdon/Config/blob/master/emacs/init.org
 
@@ -82,6 +84,8 @@
   ;; https://github.com/DarthFennec/highlight-indent-guides#custom-highlighter-function
   :init
   (add-hook 'prog-mode-hook 'highlight-indent-guides-mode))
+
+(use-package git-gutter)
 
 ;; Evil
 (use-package evil

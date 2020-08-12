@@ -4,6 +4,7 @@ export PATH=$HOME/.config/i3/scripts/:$PATH
 export PATH=$HOME/.local/bin:$PATH
 export PATH=$HOME/.config/yarn/global/node_modules/.bin:$PATH
 export PATH="$PATH:$HOME/.rvm/bin"
+export PATH=$PATH:"$HOME/.pub-cache/bin"
 export PATH=$HOME/bin:$PATH # needs to be early in the list
 
 export NVM_DIR=$HOME/.nvm
@@ -103,7 +104,6 @@ EDITOR='nvim'
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
 alias l=ls
-alias cdtemp='cd `mktemp -d`'
 alias venv2='virtualenv -p python2 .venv && . .venv/bin/activate'
 alias venv3='virtualenv -p python3 .venv && . .venv/bin/activate'
 alias vim='nvim'
@@ -116,8 +116,18 @@ alias icat='kitty +kitten icat'
 alias kcat=icat
 alias tw=timew
 alias tws="timew summary :ids"
+alias tww="timew week"
 
 bindkey \^U backward-kill-line
+
+# make a temp dir and cd to it
+cdtemp() {
+  suffix=$1
+  if [ ! -z $suffix ]; then
+    fragment="--suffix=-$1"
+  fi
+  cd `mktemp --directory $fragment`
+}
 
 # thanks https://stackoverflow.com/a/24347344/1410035
 ssh-auth() {
@@ -132,7 +142,7 @@ ssh-auth() {
   } || ( [[ ! -z "$sshAgentPid" ]] && {
     # if the agent is running, but there's no file (not sure why), fix the situation
     echo "[SSH] ssh-agent is running, but $theFile does not exist" > /dev/stderr
-    pgrep ssh-agent | xargs -n1 kill > /dev/null
+    pkill ssh-agent
     unset SSH_AGENT_PID
   } )
 
@@ -140,7 +150,7 @@ ssh-auth() {
   [[ ! -z "$SSH_AGENT_PID" ]] && [[ "$sshAgentPid" != "$SSH_AGENT_PID" ]] && {
     echo "[SSH] SSH_AGENT_PID($SSH_AGENT_PID) != PID from ps($sshAgentPid)" > /dev/stderr
     rm -f $theFile
-    pgrep ssh-agent | xargs -n1 kill > /dev/null
+    pkill ssh-agent
     unset SSH_AGENT_PID
   } || {
     # echo "[SSH] SSH_AGENT_PID is not set or SSH_AGENT_PID($SSH_AGENT_PID) == PID from ps($sshAgentPid)" > /dev/stderr
@@ -208,7 +218,7 @@ for dump in ~/.zcompdump(N.mh+24); do
 done
 compinit -C
 
-if [ -z $INSIDE_EMACS ]; then # emacs gets messed up with a right side of the prompt
+if [ -z $INSIDE_EMACS -a -z $VIMRUNTIME ]; then # emacs gets really messed up with a right side of the prompt, it's merely annoying in neovim
   # add timestamp and execution time to the right prompt, thanks https://coderwall.com/p/kmchbw/zsh-display-commands-runtime-in-prompt
   function preexec() {
     timer=${timer:-$SECONDS}
@@ -245,5 +255,11 @@ elif [ -s "$AUR_NVM_DIR/bash_completion" ]; then
 else
   echo "No NVM bash completion"
 fi
+
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f '/zeta/tools/google-cloud-sdk/path.zsh.inc' ]; then . '/zeta/tools/google-cloud-sdk/path.zsh.inc'; fi
+
+# The next line enables shell command completion for gcloud.
+if [ -f '/zeta/tools/google-cloud-sdk/completion.zsh.inc' ]; then . '/zeta/tools/google-cloud-sdk/completion.zsh.inc'; fi
 
 # zprof # uncomment, along with first line, for profiling

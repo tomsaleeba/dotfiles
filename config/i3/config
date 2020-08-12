@@ -163,23 +163,22 @@ mode "resize" {
 
 bindsym $mod+r mode "resize"
 
-# Start i3bar to display a workspace bar (plus the system information i3status
-# finds out, if available)
 bar {
   font pango:DejaVu Sans Mono 9
-  status_command bumblebee-status \
-    -m title docker_ps pacman disk load cpu memory battery sensors traffic pasink datetime \
+  status_command /zeta/git/bumblebee-status/bumblebee-status \
+    -m traffic docker_ps pacman disk load cpu memory sensors battery pasink datetime \
     -p \
-      engine.workspacewrap=false \
-      memory.format="{percent:5.0f}%" \
-      traffic.states="^down" \
-      traffic.exclude="tun,lo,vpn,docker,br" \
       datetime.format="%Y-%m-%d %a %H:%M:%S" \
       disk.format="{percent:5.0f}%" \
-      traffic.showname=False \
-      traffic.graphlen=16 \
+      engine.workspacewrap=false \
+      memory.format="{percent:5.0f}%" \
       sensors.json=true \
       sensors.path="coretemp-isa-0000/Package id 0/temp1_input" \
+      traffic.exclude="tun,lo,vpn,docker,br" \
+      traffic.graphlen=16 \
+      traffic.showname=False \
+      traffic.states="^down" \
+      traffic.format="{:_>07.1f}" \
     -t gruvbox-tom
 }
 
@@ -194,6 +193,7 @@ bindsym $mod+Shift+minus move scratchpad
 bindsym $mod+minus scratchpad show
 
 for_window [class=".*"] border pixel 1
+for_window [class="ld-musl-x86_64.so.1" instance="ld-musl-x86_64.so.1"] floating enable
 
 gaps inner 5
 gaps outer -4
@@ -203,7 +203,7 @@ client.focused          #4c7899 #285577 #ffffff #2e9ef4   #3bb9bf
 
 focus_follows_mouse no
 
-bindsym $mod+Shift+d exec "rofi-pass"
+bindsym $mod+Shift+d exec "rofi-pass --last-used"
 
 bindsym XF86AudioRaiseVolume exec --no-startup-id ~/.config/i3/scripts/change-volume up
 bindsym XF86AudioLowerVolume exec --no-startup-id ~/.config/i3/scripts/change-volume down
@@ -219,6 +219,9 @@ exec_always --no-startup-id xset r rate 300 25
 exec --no-startup-id dropbox start
 exec_always --no-startup-id blueman-applet
 exec --no-startup-id nm-applet
+
+# thanks https://confluence.jaytaala.com/display/TKB/Japanese+input+with+i3+and+Arch+based+distros
+#exec --no-startup-id fcitx -d # japanese input
 
 bindsym Mod1+Tab workspace back_and_forth
 

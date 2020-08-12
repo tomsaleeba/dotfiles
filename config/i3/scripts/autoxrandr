@@ -33,17 +33,35 @@ case $(hostname) in
         builtinDisplay=$output
       fi
     done
-    for output in $(xrandr | grep '\Wconnected' | awk '{ print $1 }'); do
-      if [[ ! $output =~ ^eDP.*$ ]]; then
-        echo 'Lenovo X1 Extreme Gen2 using two external displays via HDMI + VGA'
+    connectedDisplays=$(xrandr \
+      | grep '\Wconnected' \
+      | awk '{ print $1 }' \
+      | sort \
+      | tr '\n' ' ')
+    echo "Connected displays: $connectedDisplays"
+    if [[ $connectedDisplays == 'eDP-1-1 HDMI-0 ' ]]; then
+      echo 'Lenovo X1 Extreme Gen2: HDMI and laptop displays'
+      xrandr \
+        --output HDMI-0 --auto \
+        --output eDP-1-1 --mode 1600x900 --left-of HDMI-0
+      exit
+    fi
+    if [[ $connectedDisplays == 'DP-1 HDMI-0 ' ]]; then
+      echo 'Lenovo X1 Extreme Gen2: HDMI + VGA displays'
         xrandr \
           --output HDMI-0 --auto \
           --output DP-1 --auto --right-of HDMI-0 \
           --output $builtinDisplay --off
           #--output $builtinDisplay --auto --below HDMI-0 # enables 3rd display
-        exit
-      fi
-    done
+      exit
+    fi
+    if [[ $connectedDisplays == 'DP-0 eDP-1-1 ' ]]; then
+      echo 'Lenovo X1 Extreme Gen2: DP + laptop displays'
+        xrandr \
+        --output DP-0 --mode 1680x1050 \
+        --output eDP-1-1 --mode 1600x900 --left-of DP-0
+      exit
+    fi
     echo 'Lenovo X1 Extreme Gen2 using built-in display'
     xrandr \
       --output HDMI-0 --off \
