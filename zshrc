@@ -201,6 +201,7 @@ nvm() {
   source $ZSH/plugins/nvm/nvm.plugin.zsh
   nvm "$@"
 }
+
 yarn() {
   which npm &> /dev/null && {
     unset -f yarn
@@ -211,6 +212,18 @@ yarn() {
   }
   yarn $@
 }
+
+quasar() {
+  which npm &> /dev/null && {
+    unset -f quasar
+  } || {
+    echo "running 'nvm ls' to load correct node"
+    nvm ls > /dev/null
+    unset -f quasar
+  }
+  quasar $@
+}
+
 # thanks for once-a-day compinit https://medium.com/@dannysmith/little-thing-2-speeding-up-zsh-f1860390f92
 autoload -Uz compinit
 for dump in ~/.zcompdump(N.mh+24); do
