@@ -9,6 +9,11 @@ export PATH=$HOME/bin:$PATH # needs to be early in the list
 
 export NVM_DIR=$HOME/.nvm
 
+possibleJavaHome=/usr/lib/jvm/default-runtime
+[ -d $possibleJavaHome ] && {
+  export JAVA_HOME=$possibleJavaHome
+}
+
 # Path to your oh-my-zsh installation.
 export ZSH="/home/tom/.oh-my-zsh"
 
