@@ -17,3 +17,4 @@
 - "recently opened files" so I can close a split, then re-open it from a list of
     files. Like I do with `C-b` in vim.
 - visual line, then toggle commet picks up an extra line at the bottom
+- add "open in split" actions to recent file list (`C-x f`)
