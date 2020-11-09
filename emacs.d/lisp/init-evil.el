@@ -1,3 +1,16 @@
+(defun define-extra-evil-commands ()
+  (evil-define-command evil-quit-tab-aware (&optional force)
+    "Wrap the evil-quit function so closing the last window in a tab
+    will only close that tab if there are still other tabs open"
+    :repeat nil
+    (interactive "<!>")
+    (let ((tab-count (length (funcall tab-bar-tabs-function))))
+      (if (and (= (count-windows) 1) (> tab-count 1))
+          (tab-close)
+        (evil-quit force)))
+    )
+  )
+
 (defun do-evil-config ()
   (define-key evil-normal-state-map (kbd "M-j") 'drag-stuff-down)
   (define-key evil-normal-state-map (kbd "M-k") 'drag-stuff-up)
@@ -9,6 +22,8 @@
   (define-key evil-normal-state-map (kbd "C-f") 'smart-find-files)
   (define-key evil-motion-state-map "j" 'evil-next-visual-line)
   (define-key evil-motion-state-map "k" 'evil-previous-visual-line)
+  (define-extra-evil-commands)
+  (evil-ex-define-cmd "q[uit]" 'evil-quit-tab-aware)
   )
 
 (defun do-evil-leader-config ()

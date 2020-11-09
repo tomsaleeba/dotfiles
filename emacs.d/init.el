@@ -14,22 +14,6 @@
 (require 'init-helm)
 (require 'init-tom)
 
-;; TODO
-;; - persist search highlight, https://github.com/juanjux/evil-search-highlight-persist
-;; - figure out visualstar and visual selection weirdness
-;; - get neotree to have once instance per frame
-;; - prettier https://github.com/prettier/prettier-emacs
-;;      - do we bind to js2-mode or to vue-mode too?
-;;      - should I define exec-path in emacs or pull it from shell?
-;; - https://github.com/noctuid/general.el for easier bindings?
-;; - highlight trailing spaces (auto remove?)
-;; - highlight yanked line
-;; - electric indent on vim 'S'
-;; - avy only in current frame
-;; - :co-1 is off by one line when point is at bottom of selection
-
-;; probably lots to learn from https://github.com/cbowdon/Config/blob/master/emacs/init.org
-
 ;; use-package
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
@@ -51,9 +35,15 @@
   (load-theme 'gruvbox-dark-hard t))
 
 ;; General emacs customisation
-(server-start)
+(require 'server) ;; thanks https://stackoverflow.com/a/6397419/1410035
+(or (server-running-p) ;; only start server once
+    (server-start))
 
 (global-set-key (kbd "C-x .") 'find-init-file)
+
+(tab-bar-mode 1)
+(global-set-key (kbd "C-<next>") 'tab-next)
+(global-set-key (kbd "C-<prior>") 'tab-previous)
 
 ;; Things useful everywhere
 (use-package telephone-line
@@ -61,7 +51,9 @@
 
 (use-package company
   :config
-  (global-company-mode t))
+  (global-company-mode t)
+  (setq company-idle-delay .3)
+  (use-package company-web))
 
 (use-package which-key
   :config
@@ -109,6 +101,13 @@
 (use-package ace-window
   :config
   (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)))
+
+;; HTML
+(use-package tagedit
+  :config
+  (tagedit-add-experimental-features) ;; for tag completion
+  :init
+  (add-hook 'html-mode-hook (lambda () (tagedit-mode 1))))
 
 ;; Javascript
 (use-package js2-mode
