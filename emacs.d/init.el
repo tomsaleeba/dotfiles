@@ -27,7 +27,7 @@
 ;; Theme
 (if
     (member "Hack" (font-family-list))
-    (set-face-attribute 'default nil :font "Hack-11")
+    (set-face-attribute 'default nil :font "Hack-12")
   (set-face-attribute 'default nil :font "Source Code Pro-12"))
 
 (use-package gruvbox-theme
@@ -58,6 +58,15 @@
 (use-package which-key
   :config
   (which-key-mode))
+
+(use-package disable-mouse
+  :config
+  (global-disable-mouse-mode)
+  (mapc #'disable-mouse-in-keymap
+        (list evil-motion-state-map
+              evil-normal-state-map
+              evil-visual-state-map
+              evil-insert-state-map)))
 
 (use-package projectile
   :config

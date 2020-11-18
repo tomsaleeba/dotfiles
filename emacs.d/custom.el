@@ -23,7 +23,7 @@
  '(make-backup-files nil)
  '(menu-bar-mode nil)
  '(package-selected-packages
-   '(hippie-expand company-web company-web-html tagedit helm ace-window evil company company-mode git-gutter highlight-indent-guides evil-anzu anzu js2-mode prettier-js drag-stuff neotree avy popwin evil-surround rainbow-delimiters helm-projectile which-key vue-mode use-package telephone-line projectile paredit markdown-mode helm-ag gruvbox-theme evil-visualstar evil-visual-mark-mode evil-leader evil-god-state evil-easymotion clojure-mode))
+   '(disable-mouse hippie-expand company-web company-web-html tagedit helm ace-window evil company company-mode git-gutter highlight-indent-guides evil-anzu anzu js2-mode prettier-js drag-stuff neotree avy popwin evil-surround rainbow-delimiters helm-projectile which-key vue-mode use-package telephone-line projectile paredit markdown-mode helm-ag gruvbox-theme evil-visualstar evil-visual-mark-mode evil-leader evil-god-state evil-easymotion clojure-mode))
  '(prettier-js-args
    '("--single-quote" "--trailing-comma=all" "--arrow-parens=avoid" "--print-width=80" "--no-semi"))
  '(recentf-mode t)
