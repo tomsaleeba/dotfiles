@@ -24,6 +24,11 @@
   (define-key evil-motion-state-map "k" 'evil-previous-visual-line)
   (define-extra-evil-commands)
   (evil-ex-define-cmd "q[uit]" 'evil-quit-tab-aware)
+  (mapc #'disable-mouse-in-keymap
+        (list evil-motion-state-map
+              evil-normal-state-map
+              evil-visual-state-map
+              evil-insert-state-map))
   )
 
 (defun do-evil-leader-config ()
