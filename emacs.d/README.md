@@ -18,9 +18,8 @@
 - "recently opened files" so I can close a split, then re-open it from a list of
     files. Like I do with `C-b` in vim.
 - picking up an extra line at the bottom for
-    - visual line, then toggle comment 
+    - visual line, then toggle comment
     - :co-1
-- add "open in split" actions to recent file list (`C-x f`)
 - persist search highlight, https://github.com/juanjux/evil-search-highlight-persist
 - get neotree to have once instance per frame
 - prettier https://github.com/prettier/prettier-emacs
@@ -36,4 +35,7 @@
   [company-helm](https://www.reddit.com/r/emacs/comments/c61oio/helm_instead_of_with_company/)
 - `:q` only closes current buffer/split, not whole frame with all tabs in it
 
- probably lots to learn from https://github.com/cbowdon/Config/blob/master/emacs/init.org
+probably lots to learn from https://github.com/cbowdon/Config/blob/master/emacs/init.org
+
+Might be able to take some ideas from
+https://github.com/purcell/emacs.d . Flycheck looks useful.
