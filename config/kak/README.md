@@ -3,6 +3,7 @@
  - `:echo %opt{filetype}` to see current filetype
  - `:doc options` to read more about options
  - `:plug-install` to install plugins, it's not automatic
+ - `g a` go to alt buffer
 
 # TODO
  - figure out window management. Seems like the default is to tie into tmux, but can I make it work with Kitty?
@@ -10,16 +11,17 @@
      - buffers
      - registers
  - quick switch buffers like vim `<c-6>`
- - get `<c-w>` in insert mode working
+ - get `<c-u>` in insert mode working
  - cursor change for insert/normal mode
  - highlight cursor line
- - easymotion, https://github.com/danr/kakoune-easymotion
  - smart indenting
  - line wrapping (both the config and command).
      https://cosine.blue/2019-09-06-kakoune.html mentions how there are options
      but essentially you use an external formatter to do it like `par` or `fmt`.
  - wow/store/obs syntax highlighting craps out around line 250-ish
  - have fzf honour .gitignore. fzf just reads from stdin so `git ls-files | fzf` does the trick
+ - move line up/down with `<a-up/down>`
+ - get easymotion highlighting to have a different face for the curr char and subsequent ones
 
 # Pros
  - syntax highlighting for .vue files out-of-the-box

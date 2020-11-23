@@ -39,3 +39,9 @@ plug 'delapouite/kakoune-i3' %{
 plug "andreyorst/fzf.kak" %{
   map global normal <c-p> ': fzf-mode<ret>'
 }
+
+plug "danr/kakoune-easymotion" %{
+  map global user , ': easy-motion-char<ret>' -docstring 'easy motion char'
+  # https://github.com/danr/kakoune-easymotion/issues/27
+  set-face global EasyMotionForeground rgb:fdf6e3,rgb:268bd2
+}
