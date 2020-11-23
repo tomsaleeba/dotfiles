@@ -1,2 +1,41 @@
-add-highlighter global/ number-lines
+add-highlighter global/ number-lines -relative -hlcursor
 colorscheme gruvbox
+
+# from https://github.com/co-dh/dotfiles/blob/master/kakrc
+hook global ModeChange push:normal:insert %{ face window PrimaryCursor +u;  addhl window/ws show-whitespaces -spc ' '}
+hook global ModeChange  pop:insert:normal %{ face window PrimaryCursor rgb:002b36,rgb:839496; rmhl window/ws}
+
+# thanks https://cosine.blue/2019-09-06-kakoune.html
+map global user y '$xsel -bi<ret>' -docstring 'yank to clipboard'
+map global user p '!xsel -b<ret>' -docstring 'paste from clipboard'
+map global user d '|xsel -bi<ret>' -docstring 'cut to clipboard'
+
+map global user w ': write<ret>; : echo written :D<ret>' -docstring 'write'
+
+# Clean trailing whitespace before writing
+# https://github.com/dmerejkowsky/dotfiles/blob/8233488/configs/kakoune/kakrc#L264-L269
+define-command cleanup-whitespace %{
+  try %{ execute-keys -draft \% s \h+$ <ret> d }
+}
+hook global BufWritePre .* cleanup-whitespace
+
+map global user b ':set-option buffer filetype ' -docstring 'set filetype for the current buffer'
+set-option global autowrap_column 80
+
+map global insert <c-u> '<a-;>:exec -draft <a-h>d<ret>' # doesn't work
+map global insert <c-w> '<a-;>:exec -draft bd<ret>'
+
+# FIXME how do we enable `autowrap-enable` by default?
+
+source "%val{config}/plugins/plug.kak/rc/plug.kak"
+
+# kakoune-i3
+set-option global windowing_modules 'x11'
+plug 'delapouite/kakoune-i3' %{
+  # Suggested mapping
+  map global user 3 ': enter-user-mode i3<ret>' -docstring 'i3 mode'
+}
+
+plug "andreyorst/fzf.kak" %{
+  map global normal <c-p> ': fzf-mode<ret>'
+}
