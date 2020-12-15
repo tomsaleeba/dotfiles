@@ -1,0 +1,4 @@
+configuration {
+	ssh-command: "terminology -e 'zsh -i -c "ssh {host}; zsh"'";
+	theme: "/usr/share/rofi/themes/gruvbox-dark-soft.rasi";
+}

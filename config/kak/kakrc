@@ -1,16 +1,58 @@
 add-highlighter global/ number-lines -relative -hlcursor
+add-highlighter global/ wrap
+add-highlighter global/ line '%val{cursor_line}' default,rgb:444444
+add-highlighter global/ show-matching
+add-highlighter global/ regex \b(TODO|FIXME|XXX|NOTE)\b 0:default+rb
 colorscheme gruvbox
+
+set-option global autowrap_column 80
+set-option global tabstop 2
+set-option global indentwidth 2
+set-option global scrolloff 3,0
+
+hook global WinCreate .* %{
+  autowrap-enable
+}
+
+hook global BufSetOption filetype=javascript %{
+  set-option buffer formatcmd "prettier --stdin-filepath=%val{buffile}"
+}
+
+hook global WinSetOption filetype=(javascript|java) %{
+  # nothing yet
+}
+
+hook global WinSetOption filetype=python %{
+  # set global lintcmd kak_pylint
+  # lint-enable
+  set-option global tabstop 4
+  set-option global indentwidth 4
+}
 
 # from https://github.com/co-dh/dotfiles/blob/master/kakrc
 hook global ModeChange push:normal:insert %{ face window PrimaryCursor +u;  addhl window/ws show-whitespaces -spc ' '}
 hook global ModeChange  pop:insert:normal %{ face window PrimaryCursor rgb:002b36,rgb:839496; rmhl window/ws}
+
+# from https://github.com/mawww/kakoune/blob/master/doc/autoedit.asciidoc#increasing-indentation
+#hook InsertChar \n %[ try %[ exec -draft k<a-x> <a-k>[{(]\h*$<ret> j<a-gt> ] ]
 
 # thanks https://cosine.blue/2019-09-06-kakoune.html
 map global user y '$xsel -bi<ret>' -docstring 'yank to clipboard'
 map global user p '!xsel -b<ret>' -docstring 'paste from clipboard'
 map global user d '|xsel -bi<ret>' -docstring 'cut to clipboard'
 
+map global user b ':set-option buffer filetype ' -docstring 'set filetype for the current buffer'
 map global user w ': write<ret>; : echo written :D<ret>' -docstring 'write'
+map global user = '|python -c "print(eval(input()))"<ret>' -docstring 'do math with python'
+
+map global insert <c-u> '<a-;>:exec -draft <a-h>d<ret>' # doesn't work
+map global insert <c-w> '<a-;>:exec -draft bd<ret>'
+
+map global normal <a-up> 'xdkkpj'
+map global normal <a-down> 'xdpj'
+map global normal X 'xH'
+
+define-command ene 'edit -scratch'
 
 # Clean trailing whitespace before writing
 # https://github.com/dmerejkowsky/dotfiles/blob/8233488/configs/kakoune/kakrc#L264-L269
@@ -19,29 +61,57 @@ define-command cleanup-whitespace %{
 }
 hook global BufWritePre .* cleanup-whitespace
 
-map global user b ':set-option buffer filetype ' -docstring 'set filetype for the current buffer'
-set-option global autowrap_column 80
-
-map global insert <c-u> '<a-;>:exec -draft <a-h>d<ret>' # doesn't work
-map global insert <c-w> '<a-;>:exec -draft bd<ret>'
-
-# FIXME how do we enable `autowrap-enable` by default?
-
 source "%val{config}/plugins/plug.kak/rc/plug.kak"
-
-# kakoune-i3
-set-option global windowing_modules 'x11'
-plug 'delapouite/kakoune-i3' %{
-  # Suggested mapping
-  map global user 3 ': enter-user-mode i3<ret>' -docstring 'i3 mode'
-}
 
 plug "andreyorst/fzf.kak" %{
   map global normal <c-p> ': fzf-mode<ret>'
+} defer fzf %{
+  set-option global fzf_use_main_selection false
 }
+
+# FIXME doesn't work yet, closes instantly
+define-command -hidden -override -docstring "wrapper command to create new horizontal split" \
+  fzf-horizontal -params .. %{ evaluate-commands %sh{
+      #tmux-terminal-horizontal kak -c %val{session} -e "%arg{@}"
+      # kitty-new-horizontal "%arg{@}"
+      kitty @ launch --no-response --location=vsplit --type=window --cwd "$PWD" \
+        kak -c $kak_session $kakoune_args -e "$@"
+  }}
 
 plug "danr/kakoune-easymotion" %{
   map global user , ': easy-motion-char<ret>' -docstring 'easy motion char'
   # https://github.com/danr/kakoune-easymotion/issues/27
   set-face global EasyMotionForeground rgb:fdf6e3,rgb:268bd2
 }
+
+plug "caksoylar/kakoune-smooth-scroll" config %{
+  hook global WinCreate .* %{
+    # using these nested hooks as per https://github.com/caksoylar/kakoune-smooth-scroll#configuration
+    hook -once window WinDisplay .* %{
+      smooth-scroll-enable
+    }
+  }
+}
+
+plug "ABuffSeagull/kakoune-vue" # FIXME doesn't seem to have any effect
+
+source /home/tom/git/kakoune-kitty/kitty.kak
+define-command sp 'exec :kitty-new-vertical<ret>'
+define-command vs 'exec :kitty-new-horizontal<ret>'
+map global user k ': enter-user-mode kitty<ret>' -docstring 'kitty mode'
+
+# thanks https://github.com/mawww/kakoune/issues/1285#issuecomment-290642871
+def -params 1 extend-line-down %{
+    exec "<a-:>%arg{1}X"
+}
+def -params 1 extend-line-up %{
+    exec "<a-:><a-;>%arg{1}K<a-;>"
+      try %{
+            exec -draft ';<a-K>\n<ret>'
+                exec X
+      }
+        exec '<a-;><a-X>'
+}
+map global normal x ':extend-line-down %val{count}<ret>'
+map global normal X ':extend-line-up %val{count}<ret>'
+

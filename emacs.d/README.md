@@ -28,6 +28,7 @@
 - https://github.com/noctuid/general.el for easier bindings?
 - highlight trailing spaces (auto remove?)
 - highlight yanked line
+- after opening in split, focus the new window
 - electric indent on vim 'S'
 - avy only in current frame
 - get camelCase autocomplete working. Currently using company-mode
