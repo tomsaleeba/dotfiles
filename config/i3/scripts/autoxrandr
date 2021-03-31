@@ -39,11 +39,25 @@ case $(hostname) in
       | sort \
       | tr '\n' ' ')
     echo "Connected displays: $connectedDisplays"
-    if [[ $connectedDisplays == 'eDP-1-1 HDMI-0 ' ]]; then
-      echo 'Lenovo X1 Extreme Gen2: HDMI and laptop displays'
+    eDP=$(echo $connectedDisplays | grep -o '\<eDP[-0-9]*\>')
+    echo "  eDP=$eDP"
+    HDMI=$(echo $connectedDisplays | grep -o '\<HDMI[-0-9]*\>')
+    echo "  HDMI=$HDMI"
+    DP=$(echo $connectedDisplays | grep -o '\<DP[-0-9]*\>')
+    echo "  DP=$DP"
+    if [ ! -z "$eDP" -a ! -z "$HDMI" -a -z "$DP" ]; then
+      echo 'Lenovo X1 Extreme Gen2: HDMI and laptop displays (Nvidia)'
       xrandr \
-        --output HDMI-0 --auto \
-        --output eDP-1-1 --mode 1600x900 --left-of HDMI-0
+        --output $HDMI --auto \
+        --output $eDP --mode 1600x900 --right-of $HDMI
+      exit
+    fi
+    # FIXME update rest of script to use new vars
+    if [[ $connectedDisplays == 'DP-1-1 eDP-1 ' ]]; then
+      echo 'Lenovo X1 Extreme Gen2: VGA and laptop displays'
+      xrandr \
+        --output DP-1-1 --auto \
+        --output eDP-1 --auto --right-of DP-1-1
       exit
     fi
     if [[ $connectedDisplays == 'DP-1 HDMI-0 ' ]]; then

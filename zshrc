@@ -13,6 +13,11 @@ export PATH=$HOME/bin:$PATH # needs to be early in the list
 
 export NVM_DIR=$HOME/.nvm
 
+secretFile=$HOME/.secret-zshrc
+if [ -f $secretFile ]; then
+  source $secretFile
+fi
+
 possibleJavaHome=/usr/lib/jvm/default-runtime
 [ -d $possibleJavaHome ] && {
   export JAVA_HOME=$possibleJavaHome
@@ -116,6 +121,7 @@ alias l=ls
 alias venv2='virtualenv -p python2 .venv && . .venv/bin/activate'
 alias venv3='virtualenv -p python3 .venv && . .venv/bin/activate'
 alias vim='nvim'
+alias vi='vim'
 alias editzsh='nvim ~/.zshrc && source ~/.zshrc'
 alias editi3='nvim ~/.config/i3/config'
 alias editrofi='nvim ~/.config/rofi/config'
@@ -261,7 +267,7 @@ WORDCHARS='|*?_-.[]~=&;!#$%^(){}<>'
 
 export jsbeautify_indent_size=2
 
-export BROWSER=/usr/bin/google-chrome-stable
+export BROWSER=/usr/bin/firefox
 
 # cache busting for command completion
 # thanks https://unix.stackexchange.com/a/2180/68885
@@ -285,3 +291,7 @@ if [ -f '/zeta/tools/google-cloud-sdk/path.zsh.inc' ]; then . '/zeta/tools/googl
 if [ -f '/zeta/tools/google-cloud-sdk/completion.zsh.inc' ]; then . '/zeta/tools/google-cloud-sdk/completion.zsh.inc'; fi
 
 # zprof # uncomment, along with first line, for profiling
+
+#THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
+export SDKMAN_DIR="/home/tom/.sdkman"
+[[ -s "/home/tom/.sdkman/bin/sdkman-init.sh" ]] && source "/home/tom/.sdkman/bin/sdkman-init.sh"
