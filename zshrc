@@ -13,11 +13,6 @@ export PATH=$HOME/bin:$PATH # needs to be early in the list
 
 export NVM_DIR=$HOME/.nvm
 
-secretFile=$HOME/.secret-zshrc
-if [ -f $secretFile ]; then
-  source $secretFile
-fi
-
 possibleJavaHome=/usr/lib/jvm/default-runtime
 [ -d $possibleJavaHome ] && {
   export JAVA_HOME=$possibleJavaHome
@@ -238,6 +233,11 @@ quasar() {
   }
   quasar $@
 }
+
+secretFile=$HOME/.secret-zshrc
+if [ -f $secretFile ]; then
+  source $secretFile
+fi
 
 # thanks for once-a-day compinit https://medium.com/@dannysmith/little-thing-2-speeding-up-zsh-f1860390f92
 autoload -Uz compinit
