@@ -50,6 +50,17 @@ case $(hostname) in
       xrandr \
         --output $HDMI --auto \
         --output $eDP --mode 1600x900 --right-of $HDMI
+      # this lets you try a higher res than the monitor supports
+      # thanks https://unix.stackexchange.com/a/596888/68885
+      # xrandr --output $HDMI --panning 2560x1080 --scale 1.292929x1
+      # ...and this resets it. Run the line below OR above, not both.
+      # xrandr --output $HDMI --mode 1920x1080 --panning 1920x1080 --scale 1x1
+      # Might need to bounce i3 after to reset status bars
+
+      # force an extra 10% width from the main monitor. It's blurry :'(
+      # xrandr \
+      #   --output $HDMI --scale 1.1x1 \
+      #   --output $eDP --pos $(expr 1920 \* 11 / 10)x0
       exit
     fi
     # FIXME update rest of script to use new vars
