@@ -182,7 +182,7 @@ for_window [class=".*"] border pixel 1
 for_window [class="ld-musl-x86_64.so.1" instance="ld-musl-x86_64.so.1"] floating enable
 
 gaps inner 5
-gaps outer -4
+gaps outer -5
 
 # class                 border  backgr. text    indicator child_border
 client.focused          #4c7899 #285577 #ffffff #2e9ef4   #3bb9bf
