@@ -2,6 +2,8 @@
 # thanks https://faq.i3wm.org/question/2332/flexible-monitor-setup.1.html
 set -euo pipefail
 
+edpScale=1.4
+
 case $(hostname) in
   tom-pc )
     xrandr | grep ' connected' | grep -q VGA-0 && {
@@ -58,10 +60,11 @@ case $(hostname) in
           --panning 3840x2160 \
           --scale 1 \
           --rotate normal \
+          --primary \
         --output $eDP \
-          --mode 1600x900 \
-          --panning 1600x900 \
-          --scale 2 \
+          --mode 1920x1080 \
+          --panning 1920x1080 \
+          --scale $edpScale \
           --right-of $HDMI
 
       # thanks https://unix.stackexchange.com/a/596888/68885
@@ -133,16 +136,18 @@ case $(hostname) in
     fi
     if [ ! -z "$eDP" -a ! -z "$DP" -a -z "$HDMI" ]; then
       echo 'Lenovo X1 Extreme Gen2: DP and laptop displays (Nvidia)'
+      set -x
       xrandr \
         --output $DP \
           --mode 3840x2160 \
           --panning 3840x2160 \
           --scale 1 \
           --rotate normal \
+          --primary \
         --output $eDP \
-          --mode 1600x900 \
-          --panning 1600x900 \
-          --scale 2 \
+          --mode 1920x1080 \
+          --panning 1920x1080 \
+          --scale $edpScale \
           --right-of $DP
     fi
     echo 'Lenovo X1 Extreme Gen2 using built-in display'
