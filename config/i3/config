@@ -164,8 +164,17 @@ mode "resize" {
 bindsym $mod+r mode "resize"
 
 bar {
+  output primary
+  tray_output primary
   font pango:DejaVu Sans Mono 9
   status_command ~/.config/i3/scripts/bumblebee-wrapper
+}
+
+bar {
+  output nonprimary
+  tray_output none
+  font pango:DejaVu Sans Mono 9
+  status_command bumblebee-status -m datetime
 }
 
 # move current workspace between monitors
@@ -201,6 +210,7 @@ bindsym XF86MonBrightnessDown exec --no-startup-id ~/.config/i3/scripts/change-b
 bindsym XF86Display exec --no-startup-id ~/.config/i3/scripts/autoxrandr
 
 exec_always --no-startup-id ~/.config/i3/scripts/autoxrandr
+exec_always --no-startup-id bash ~/.config/i3/scripts/xinput-config
 exec_always --no-startup-id xset r rate 300 25
 exec --no-startup-id dropbox start
 exec_always --no-startup-id blueman-applet
@@ -228,3 +238,6 @@ mode "$mode_system" {
 }
 bindsym $mod+Shift+p mode "$mode_system"
 bindsym Control+Mod1+l exec --no-startup-id ~/.config/i3/scripts/i3exit lock
+
+bindsym $mod+z exec --no-startup-id ~/.config/i3/scripts/precision-deft-pro-toggle
+bindsym --border --whole-window button12 exec --no-startup-id ~/.config/i3/scripts/precision-deft-pro-toggle

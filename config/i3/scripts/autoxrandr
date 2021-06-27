@@ -4,15 +4,21 @@ set -euo pipefail
 
 edpScale=1.4
 
+function runXrandr {
+  cmd="xrandr $@"
+  echo -e "\e[31m[DEBUG]\e[0m" $cmd
+  eval $cmd
+}
+
 case $(hostname) in
   tom-pc )
     xrandr | grep ' connected' | grep -q VGA-0 && {
       echo 'Home PC with VGA'
-      xrandr --output VGA-0 --auto --left-of DVI-I-1
+      runXrandr --output VGA-0 --auto --left-of DVI-I-1
       exit 0
     }
     echo 'Home PC with HDMI'
-    xrandr --output LVDS1 --auto --left-of HDMI1
+    runXrandr --output LVDS1 --auto --left-of HDMI1
     ;;
   tom-w650eh )
     for output in $(xrandr | grep '\Wconnected' | awk '{ print $1 }'); do
@@ -23,12 +29,12 @@ case $(hostname) in
     for output in $(xrandr | grep '\Wconnected' | awk '{ print $1 }'); do
       if [[ ! $output =~ ^LVDS.*$ ]]; then
         echo 'W650EH using two external displays via HDMI + VGA'
-        xrandr --output HDMI1 --auto --left-of VGA1 --output LVDS1 --off
+        runXrandr --output HDMI1 --auto --left-of VGA1 --output LVDS1 --off
         exit
       fi
     done
     echo 'W650EH using built-in display'
-    xrandr --output $lvds --auto
+    runXrandr --output $lvds --auto
     ;;
   tom-x1eg2 )
     # FIXME is this still required? Can we just use $eDP?
@@ -54,7 +60,7 @@ case $(hostname) in
     fi
     if [ ! -z "$eDP" -a ! -z "$HDMI" -a -z "$DP" ]; then
       echo 'Lenovo X1 Extreme Gen2: HDMI and laptop displays (Nvidia)'
-      xrandr \
+      runXrandr \
         --output $HDMI \
           --mode 3840x2160 \
           --panning 3840x2160 \
@@ -71,41 +77,41 @@ case $(hostname) in
       # for the help on scaling, panning, etc.
 
       # simulate 34" 21:9 ultra-widescreen on 27" 16:9
-      # xrandr \
+      # runXrandr \
       #   --output $HDMI --panning 2560x1080 --scale 1.292929x1
       # Might need to bounce i3 after to reset status bars
 
       # simulate a 32" 16:9 1920x1080 display on my 27"
       # HDMI="HDMI-0" eDP="eDP-1-1"; \
-      # xrandr \
+      # runXrandr \
       #   --output $HDMI --panning 1920x1080 --scale 0.847x0.847  \
       #   --output $eDP --pos 1920x0 --mode 1600x900 --scale 0.68
 
       # force an extra 10% width from the main monitor. It's blurry :'(
-      # xrandr \
+      # runXrandr \
       #   --output $HDMI --scale 1.1x1 \
       #   --output $eDP --pos $(expr 1920 \* 11 / 10)x0
 
       # simulate 28" display on my 27"
-      # xrandr \
+      # runXrandr \
       #   --output $HDMI --panning 1920x1080 --scale 0.96x0.96 \
       #   --output $eDP --pos 1920x0
 
       # test if scaling down by 1.5 works. It doesn't.
       # Tried to round pixels as per https://news.ycombinator.com/item?id=25970690
       # but that doesn't help.
-      # xrandr \
+      # runXrandr \
       #   --output $HDMI --panning 1306x734 --scale 0.68x0.68 \
       #   --output $eDP --auto --pos 1308x0
 
       # Can't tell if scaling by 2 is good. It's still blurry but that's
       # probably what this crap res looks like
-      # xrandr \
+      # runXrandr \
       #   --output $HDMI --panning 960x540 --scale 0.5x0.5 \
       #   --output $eDP --auto --pos 962x0
 
       # rotate into portrait
-      # xrandr \
+      # runXrandr \
       #   --output $HDMI --rotate right --panning 1080x1920 \
       #   --output $eDP --right-of $HDMI
       exit
@@ -113,14 +119,14 @@ case $(hostname) in
     # FIXME update rest of script to use new vars
     if [[ $connectedDisplays == 'DP-1-1 eDP-1 ' ]]; then
       echo 'Lenovo X1 Extreme Gen2: VGA and laptop displays'
-      xrandr \
+      runXrandr \
         --output DP-1-1 --auto \
         --output eDP-1 --auto --right-of DP-1-1
       exit
     fi
     if [[ $connectedDisplays == 'DP-1 HDMI-0 ' ]]; then
       echo 'Lenovo X1 Extreme Gen2: HDMI + VGA displays'
-        xrandr \
+        runXrandr \
           --output HDMI-0 --auto \
           --output DP-1 --auto --right-of HDMI-0 \
           --output $builtinDisplay --off
@@ -129,32 +135,32 @@ case $(hostname) in
     fi
     if [[ $connectedDisplays == 'DP-0 eDP-1-1 ' ]]; then
       echo 'Lenovo X1 Extreme Gen2: DP + laptop displays'
-        xrandr \
+        runXrandr \
         --output DP-0 --mode 1680x1050 \
         --output eDP-1-1 --mode 1600x900 --left-of DP-0
       exit
     fi
     if [ ! -z "$eDP" -a ! -z "$DP" -a -z "$HDMI" ]; then
       echo 'Lenovo X1 Extreme Gen2: DP and laptop displays (Nvidia)'
-      set -x
-      xrandr \
+      runXrandr \
         --output $DP \
           --mode 3840x2160 \
-          --panning 3840x2160 \
+          --panning 0x0 \
           --scale 1 \
           --rotate normal \
           --primary \
         --output $eDP \
           --mode 1920x1080 \
-          --panning 1920x1080 \
+          --panning 0x0 \
           --scale $edpScale \
           --right-of $DP
+      exit
     fi
     echo 'Lenovo X1 Extreme Gen2 using built-in display'
-    xrandr \
+    runXrandr \
       --output $HDMI --off \
       --output $DP --off \
-      --output $builtinDisplay --auto
+      --output $builtinDisplay --auto --primary
     ;;
   * )
     echo '[ERROR] unhandled hostname'
