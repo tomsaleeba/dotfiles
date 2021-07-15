@@ -1,0 +1,47 @@
+#!/bin/bash
+# Toggles display input because monitor OSDs are sloooooooww!!!
+set -euo pipefail
+
+# To use this, we need to sudo without a password prompt. To do this, you need
+# to use visudo:
+#   sudo env EDITOR=nano visudo /etc/sudoers.d/69-monitor-toggle
+# ...and add the content (with path and username adjustments):
+#   tom ALL= NOPASSWD: /home/tom/.config/i3/scripts/toggle-monitor-input
+
+#https://askubuntu.com/a/1181157/234373
+#https://manpages.ubuntu.com/manpages/focal/man1/ddcutil.1.html
+# Feature: 60 (Input Source)
+#    Values (unparsed): 0F 10 11 12
+#    Values (  parsed):
+#       0f: DisplayPort-1
+#       10: DisplayPort-2
+#       11: HDMI-1
+#       12: HDMI-2
+
+featureId=60
+# get the serial number from `ddcutil detect`
+ddcCmd="ddcutil --sn 81M00162019" # BenQ EW3270U
+
+curr=$($ddcCmd --terse getvcp $featureId | cut -f4 -d' ')
+if [ -z "${curr:-}" ]; then
+  echo "[ERROR] could not get VCP value"
+  exit 1
+fi
+echo "[INFO] current value: $curr"
+
+# It's all messed up because the OSD shows `HDMI1` but it's actually `HDMI-2`
+# according to the table of values.
+
+linux="x0f"
+mac="x12"
+if [ "$curr" = $linux ]; then
+  newVal=$mac
+elif [ "$curr" = $mac ]; then
+  newVal=$linux
+else
+  echo "[ERROR] unhandled value: $curr"
+  exit 1
+fi
+
+echo "[INFO] setting new value to: $newVal"
+$ddcCmd setvcp $featureId $newVal

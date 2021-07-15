@@ -239,3 +239,5 @@ bindsym Control+Mod1+l exec --no-startup-id ~/.config/i3/scripts/i3exit lock
 
 bindsym $mod+z exec --no-startup-id ~/.config/i3/scripts/precision-deft-pro-toggle
 bindsym --border --whole-window button12 exec --no-startup-id ~/.config/i3/scripts/precision-deft-pro-toggle
+
+bindsym $mod+Shift+Delete exec --no-startup-id sudo ~/.config/i3/scripts/toggle-monitor-input
