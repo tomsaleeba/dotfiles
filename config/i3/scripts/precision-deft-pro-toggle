@@ -5,24 +5,32 @@ signalFile=/tmp/mouse-precision
 id="pointer:ELECOM TrackBall Mouse DEFT Pro TrackBall"
 ctm=193 # Coordinate Transformation Matrix
 ape=341 # Accel Profile Enabled
+asp=338 # Accel Speed
+overridePrecision=${1:-}
+precision=${overridePrecision:-10}
+# originally I turned acceleration off, but I think it adds accuracy
+accelEnabledInPrecisionMode=1
+accelSpeed=${2:-1}
 
 function doit {
   ctmVal=${1:?}
   apeVal=${2:?}
+  aspVal=${3:?}
   # thanks https://bbs.archlinux.org/viewtopic.php?pid=1830611#p1830611
-  xinput set-prop "$id" "$ctm" 1, 0, 0, 0, 1, 0, 0, 0, $ctmVal
-  xinput set-prop "$id" "$ape" $apeVal, 0
+  xinput set-prop "$id" $ctm 1, 0, 0, 0, 1, 0, 0, 0, $ctmVal
+  xinput set-prop "$id" $ape $apeVal, 0
+  xinput set-prop "$id" $asp $aspVal
 }
 
-if [ -f $signalFile ]; then
-  echo "Toggling off"
-  doit 1 1
-  rm -f $signalFile
-else
-  echo "Toggling on"
-  doit 60 0
+if [ ! -f $signalFile -o ! -z "$overridePrecision" ]; then
+  echo "Toggling on, with $precision"
+  doit $precision $accelEnabledInPrecisionMode -1
   date > $signalFile
+else
+  echo "Toggling off"
+  doit 2.5 1 $accelSpeed
+  rm -f $signalFile
 fi
 
-xinput list-props "$id" | grep -e "$ctm" -e "$ape"
+xinput list-props "$id" | grep -e "$ctm" -e "$ape" -e $"$asp"
 echo "Success"
