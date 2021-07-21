@@ -172,7 +172,13 @@ bar {
   output nonprimary
   tray_output none
   font pango:DejaVu Sans Mono 9
-  status_command bumblebee-status -m datetime
+  status_command bumblebee-status \
+    -m \
+    cpu memory datetimetz:dutc datetime:dloc \
+    -p \
+    dutc.format='%Y-%m-%d %H:%M:%S %Z' \
+    dutc.timezone='utc' \
+    dloc.format='%Y-%m-%d %H:%M:%S %Z (local)'
 }
 
 # move current workspace between monitors

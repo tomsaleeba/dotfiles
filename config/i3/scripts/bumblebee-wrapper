@@ -1,10 +1,11 @@
 #!/bin/bash
 set -euo pipefail
+cd `dirname "$0"`
 
 # so we get the correct TZ value
 source ~/.profile
 
-/zeta/git/bumblebee-status/bumblebee-status \
+./bumblebee-status/bumblebee-status \
     -m ping traffic docker_ps pacman load cpu memory sensors battery pasink datetime \
     -p \
       datetime.format="%Y-%m-%d %a %H:%M:%S" \

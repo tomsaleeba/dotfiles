@@ -1,3 +1,6 @@
 [submodule "config/kak/plugins/plug.kak"]
 	path = config/kak/plugins/plug.kak
 	url = https://github.com/robertmeta/plug.kak.git
+[submodule "config/i3/scripts/bumblebee-status"]
+	path = config/i3/scripts/bumblebee-status
+	url = git@github.com:tomsaleeba/bumblebee-status.git
