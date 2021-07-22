@@ -4,8 +4,8 @@ set -euo pipefail
 signalFile=/tmp/mouse-precision
 id="pointer:ELECOM TrackBall Mouse DEFT Pro TrackBall"
 ctm=193 # Coordinate Transformation Matrix
-ape=341 # Accel Profile Enabled
-asp=338 # Accel Speed
+ape=350 # Accel Profile Enabled
+asp=347 # Accel Speed
 overridePrecision=${1:-}
 precision=${overridePrecision:-10}
 # originally I turned acceleration off, but I think it adds accuracy
