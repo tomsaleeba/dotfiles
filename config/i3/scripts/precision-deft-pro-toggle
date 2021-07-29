@@ -1,11 +1,14 @@
 #!/bin/bash
 # toggle trackball cursor speed for precision movement
 set -euo pipefail
+if [ ! -z "${DEBUG:-}" ]; then
+  set -x
+fi
 signalFile=/tmp/mouse-precision
 id="pointer:ELECOM TrackBall Mouse DEFT Pro TrackBall"
-ctm=193 # Coordinate Transformation Matrix
-ape=350 # Accel Profile Enabled
-asp=347 # Accel Speed
+ctm='Coordinate Transformation Matrix'
+ape='libinput Accel Profile Enabled'
+asp='libinput Accel Speed'
 overridePrecision=${1:-}
 precision=${overridePrecision:-10}
 # originally I turned acceleration off, but I think it adds accuracy
@@ -17,9 +20,9 @@ function doit {
   apeVal=${2:?}
   aspVal=${3:?}
   # thanks https://bbs.archlinux.org/viewtopic.php?pid=1830611#p1830611
-  xinput set-prop "$id" $ctm 1, 0, 0, 0, 1, 0, 0, 0, $ctmVal
-  xinput set-prop "$id" $ape $apeVal, 0
-  xinput set-prop "$id" $asp $aspVal
+  xinput set-prop "$id" "$ctm" 1, 0, 0, 0, 1, 0, 0, 0, $ctmVal
+  xinput set-prop "$id" "$ape" $apeVal, 0
+  xinput set-prop "$id" "$asp" $aspVal
 }
 
 if [ ! -f $signalFile -o ! -z "$overridePrecision" ]; then
