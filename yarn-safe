@@ -1,0 +1,35 @@
+#!/bin/bash
+# Run yarn commands in a docker container to protected against malicious
+# dependencies trying to attach your system
+set -euo pipefail
+
+# Goals
+# - mount all required config files
+# - run as current user so perms are right on host
+# - only mount current project: the sandbox
+
+version=14
+dockerImage=node:$version-alpine
+theDir=/work
+allArgs=$@
+
+echo "[INFO] running yarn in docker image $dockerImage"
+
+if [ ${DEBUG:-0} = 1 ]; then
+  dropToShell='; sh'
+fi
+
+docker run \
+  --tty \
+  --interactive \
+  --rm \
+  --user $(id -u):$(id -g) \
+  --volume $PWD:$theDir \
+  --volume ~/.yarn:/z/.yarn \
+  --volume ~/.npm:/z/.npm \
+  --volume ~/.config/yarn:/z/.config/yarn \
+  --volume ~/.cache/yarn:/z/.cache/yarn \
+  --workdir $theDir \
+  --entrypoint /bin/sh \
+  $dockerImage \
+  -c "for c in \$(cd /z && ls -A); do ln -s /z/\$c ~/\$c; done && yarn $allArgs ${dropToShell:-}"
