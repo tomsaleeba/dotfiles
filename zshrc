@@ -11,6 +11,11 @@ export PATH="$PATH:$HOME/.rvm/bin"
 export PATH=$PATH:"$HOME/.pub-cache/bin"
 export PATH=$HOME/bin:$PATH # needs to be early in the list
 
+if [ "$(uname)" = "Darwin" ]; then
+  export PATH="/usr/local/opt/mysql-client/bin:$PATH"
+  alias pc='PASSWORD_STORE_ENABLE_EXTENSIONS=true pass clip'
+fi
+
 export NVM_DIR=$HOME/.nvm
 
 secretFile=$HOME/.secret-zshrc
@@ -24,7 +29,7 @@ possibleJavaHome=/usr/lib/jvm/default-runtime
 }
 
 # Path to your oh-my-zsh installation.
-export ZSH="/home/tom/.oh-my-zsh"
+export ZSH="$HOME/.oh-my-zsh"
 
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time oh-my-zsh is loaded, in which case,
@@ -135,6 +140,11 @@ alias tww="timew week"
 
 bindkey \^U backward-kill-line
 
+if [ "$(uname)" = "Darwin" ]; then
+  bindkey "\e[1;3D" backward-word # ⌥←
+  bindkey "\e[1;3C" forward-word # ⌥→
+fi
+
 # make a temp dir and cd to it
 cdtemp() {
   suffix=$1
@@ -148,7 +158,12 @@ cdtemp() {
 ssh-auth() {
   # make sure your ssh keys are added with: ssh-add <key>
   theFile=/tmp/ssh-agent.sh
-  sshAgentPid=`ps -C ssh-agent -o pid:1=` # :1 means no padding spaces
+  [ "$(uname)" = "Darwin" ] && {
+    sshAgentPid=$(ps -A | grep ssh-agent | awk '{print $1}')
+    return # FIXME remove line, actually handle for macOS
+  } || {
+    sshAgentPid=`ps -C ssh-agent -o pid:1=` # :1 means no padding spaces
+  }
 
   # if we have a file, source it
   [[ -f "$theFile" ]] && {
@@ -209,6 +224,10 @@ nvm() {
     echo "NVM not loaded! Loading user installation now..."
     source ~/.nvm/nvm.sh
     # source ~/.nvm/nvm-exec # FIXME do we need this?
+  elif [ -f $BREW_NVM_DIR/nvm.sh ]; then
+    # install from homebrew on macOS 
+    source /usr/local/opt/nvm/nvm.sh
+    # source /usr/local/opt/nvm/nvm-exec # FIXME do we need this?
   else
     echo "[ERROR] no nvm installation found"
     return 1
@@ -274,12 +293,17 @@ export BROWSER=/usr/bin/firefox
 zstyle ":completion:*:commands" rehash 1
 
 AUR_NVM_DIR=/usr/share/nvm
+BREW_NVM_DIR=/usr/local/opt/nvm
 if [ -s "$NVM_DIR/bash_completion" ]; then
   # For nvm installed by bash script from their site
   \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 elif [ -s "$AUR_NVM_DIR/bash_completion" ]; then
   # For nvm installed from AUR
   \. "$AUR_NVM_DIR/bash_completion"  # This loads nvm bash_completion
+elif [ -s "$BREW_NVM_DIR/etc/bash_completion.d/nvm" ]; then
+  # For nvm installed from homebrew on macOS
+  \. "$BREW_NVM_DIR/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
+  \. "/usr/local/opt/nvm/nvm.sh"                # This loads nvm
 else
   echo "No NVM bash completion"
 fi
