@@ -60,10 +60,16 @@ case $(hostname) in
     fi
     if [ ! -z "$eDP" -a ! -z "$HDMI" -a -z "$DP" ]; then
       echo 'Lenovo X1 Extreme Gen2: HDMI and laptop displays (Nvidia)'
+      if xrandr | grep -A 1 $HDMI | grep 3840x2160; then
+        maxRes=3840x2160
+      else
+        maxRes=1920x1080
+      fi
+      # panning="--panning $maxRes"
       runXrandr \
         --output $HDMI \
-          --mode 3840x2160 \
-          --panning 3840x2160 \
+          --mode $maxRes \
+          ${panning:-} \
           --scale 1 \
           --rotate normal \
           --primary \
@@ -117,13 +123,14 @@ case $(hostname) in
       exit
     fi
     # FIXME update rest of script to use new vars
-    if [[ $connectedDisplays == 'DP-1-1 eDP-1 ' ]]; then
-      echo 'Lenovo X1 Extreme Gen2: VGA and laptop displays'
-      runXrandr \
-        --output DP-1-1 --auto \
-        --output eDP-1 --auto --right-of DP-1-1
-      exit
-    fi
+    # if [[ $connectedDisplays == 'DP-1-1 eDP-1 ' ]]; then
+    #   # FIXME shadows the laptop and USB-C DP mode lower
+    #   echo 'Lenovo X1 Extreme Gen2: VGA and laptop displays'
+    #   runXrandr \
+    #     --output DP-1-1 --auto \
+    #     --output eDP-1 --auto --right-of DP-1-1
+    #   exit
+    # fi
     if [[ $connectedDisplays == 'DP-1 HDMI-0 ' ]]; then
       echo 'Lenovo X1 Extreme Gen2: HDMI + VGA displays'
         runXrandr \
@@ -145,13 +152,13 @@ case $(hostname) in
       runXrandr \
         --output $DP \
           --mode 3840x2160 \
-          --panning 0x0 \
+          `#--panning 0x0` \
+          `#--rotate normal` \
           --scale 1 \
-          --rotate normal \
           --primary \
         --output $eDP \
           --mode 1920x1080 \
-          --panning 0x0 \
+          `#--panning 0x0` \
           --scale $edpScale \
           --right-of $DP
       exit
