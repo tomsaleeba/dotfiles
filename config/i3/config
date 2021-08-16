@@ -174,12 +174,14 @@ bar {
   font pango:DejaVu Sans Mono 9
   status_command ~/.config/i3/scripts/bumblebee-status/bumblebee-status \
     -m \
-    nvidiagpu cpu memory datetimetz:dutc datetime:dloc \
+    nvidiagpu cpu memory datetimetz:dadl datetimetz:dutc datetime:dloc \
     -p \
-    dutc.format='%Y-%m-%d %H:%M:%S %Z' \
+    dadl.format='%d %H:%M:%S %Z' \
+    dadl.timezone='Australia/Adelaide' \
+    dutc.format='%d %H:%M:%S %Z' \
     dutc.timezone='utc' \
     dloc.format='%Y-%m-%d %H:%M:%S %Z (local)' \
-    nvidiagpu.format="{temp}°C GPU:{gpu_usage_pct:>3}%/{clock_gpu:>4}MHz Mem: {mem_used}/{mem_total}MB {mem_usage_pct:>3}%/{clock_mem:>4}MHz"
+    nvidiagpu.format="{temp}°C GPU:{gpu_usage_pct:>3}%/{clock_gpu:>4}MHz Mem: {mem_used}/{mem_total}MB ({mem_usage_pct:>2}%) {mem_io_pct}%/{clock_mem:>4}MHz"
 }
 
 # move current workspace between monitors
