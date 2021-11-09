@@ -176,12 +176,14 @@ bar {
     -m \
     nvidiagpu cpu memory datetimetz:dadl datetimetz:dutc datetime:dloc \
     -p \
-    dadl.format='%d %H:%M:%S %Z' \
+    dadl.format='%H:%M %Z' \
     dadl.timezone='Australia/Adelaide' \
-    dutc.format='%d %H:%M:%S %Z' \
+    dutc.format='%H:%M %Z' \
     dutc.timezone='utc' \
     dloc.format='%Y-%m-%d %H:%M:%S %Z (local)' \
-    nvidiagpu.format="{temp}°C GPU:{gpu_usage_pct:>3}%/{clock_gpu:>4}MHz Mem: {mem_used}/{mem_total}MB ({mem_usage_pct:>2}%) {mem_io_pct}%/{clock_mem:>4}MHz"
+    memory.format="{used}/{total} ({percent:3.0f}%)" \
+    memory.byte_fmt="{:2.1f}" \
+    nvidiagpu.format="{temp}°C GPU: u:{gpu_usage_pct:>2}%/cl:{clock_gpu_usage:>2}% Mem: u:{mem_usage_pct:>2}%/io:{mem_io_pct:>2}%/cl:{clock_mem_usage:>2}%"
 }
 
 # move current workspace between monitors
@@ -248,5 +250,7 @@ bindsym Control+Mod1+l exec --no-startup-id ~/.config/i3/scripts/i3exit lock
 
 bindsym $mod+z exec --no-startup-id ~/.config/i3/scripts/precision-deft-pro-toggle
 bindsym --border --whole-window button12 exec --no-startup-id ~/.config/i3/scripts/precision-deft-pro-toggle
+# bindsym --border --whole-window button6 exec --no-startup-id /usr/bin/bash -c 'xdotool key "Control_L+Prior"'
+# bindsym --border --whole-window button7 exec --no-startup-id /usr/bin/bash -c 'xdotool key "Control_L+Next"'
 
 bindsym $mod+Shift+Delete exec --no-startup-id sudo ~/.config/i3/scripts/toggle-monitor-input
