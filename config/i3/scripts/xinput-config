@@ -1,0 +1,13 @@
+#!/bin/bash
+set -euo pipefail
+# thanks https://unix.stackexchange.com/a/340594/68885
+mouseId=$(xinput | grep -e ELECOM -e DEFT | grep -o -E '[0-9]+' | head -n 1)
+if [ ! -z "$mouseId" ]; then
+  echo "Elecom Deft found (id=$mouseId), configuring..."
+  # order matters
+  # extra middle click
+  xinput set-button-map $mouseId 1 2 3 4 5 6 7 8 9 2 11 12
+  # scroll button
+  xinput set-prop $mouseId 'libinput Button Scrolling Button' 11
+  xinput set-prop $mouseId 'libinput Scroll Method Enabled' 0 0 1
+fi

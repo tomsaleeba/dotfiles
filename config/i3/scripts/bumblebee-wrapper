@@ -1,11 +1,12 @@
 #!/bin/bash
 set -euo pipefail
+cd `dirname "$0"`
 
 # so we get the correct TZ value
 source ~/.profile
 
-/zeta/git/bumblebee-status/bumblebee-status \
-    -m traffic docker_ps pacman disk load cpu memory sensors battery pasink datetime \
+./bumblebee-status/bumblebee-status \
+    -m ping traffic docker_ps pacman load cpu memory sensors battery pasink datetime \
     -p \
       datetime.format="%Y-%m-%d %a %H:%M:%S" \
       disk.format="{percent:5.0f}%" \
@@ -13,7 +14,7 @@ source ~/.profile
       memory.format="{percent:5.0f}%" \
       sensors.json=true \
       sensors.path="coretemp-isa-0000/Package id 0/temp1_input" \
-      traffic.exclude="tun,lo,vpn,docker,br" \
+      traffic.exclude="tun,lo,vpn,docker,br,virbr" \
       traffic.graphlen=16 \
       traffic.showname=False \
       traffic.states="^down" \

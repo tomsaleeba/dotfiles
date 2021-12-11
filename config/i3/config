@@ -133,8 +133,6 @@ bindsym $mod+Shift+0 move container to workspace $ws10
 bindsym $mod+Shift+c reload
 # restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
 bindsym $mod+Shift+r restart
-# exit i3 (logs you out of your X session)
-bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -B 'Yes, exit i3' 'i3-msg exit'"
 
 # resize window (you can also use the mouse for that)
 mode "resize" {
@@ -164,8 +162,26 @@ mode "resize" {
 bindsym $mod+r mode "resize"
 
 bar {
+  output primary
+  tray_output primary
   font pango:DejaVu Sans Mono 9
   status_command ~/.config/i3/scripts/bumblebee-wrapper
+}
+
+bar {
+  output nonprimary
+  tray_output none
+  font pango:DejaVu Sans Mono 9
+  status_command ~/.config/i3/scripts/bumblebee-status/bumblebee-status \
+    -m \
+    nvidiagpu cpu memory datetimetz:dadl datetimetz:dutc datetime:dloc \
+    -p \
+    dadl.format='%d %H:%M:%S %Z' \
+    dadl.timezone='Australia/Adelaide' \
+    dutc.format='%d %H:%M:%S %Z' \
+    dutc.timezone='utc' \
+    dloc.format='%Y-%m-%d %H:%M:%S %Z (local)' \
+    nvidiagpu.format="{temp}°C GPU:{gpu_usage_pct:>3}%/{clock_gpu:>4}MHz Mem: {mem_used}/{mem_total}MB ({mem_usage_pct:>2}%) {mem_io_pct}%/{clock_mem:>4}MHz"
 }
 
 # move current workspace between monitors
@@ -182,7 +198,7 @@ for_window [class=".*"] border pixel 1
 for_window [class="ld-musl-x86_64.so.1" instance="ld-musl-x86_64.so.1"] floating enable
 
 gaps inner 5
-gaps outer -4
+gaps outer -5
 
 # class                 border  backgr. text    indicator child_border
 client.focused          #4c7899 #285577 #ffffff #2e9ef4   #3bb9bf
@@ -201,6 +217,7 @@ bindsym XF86MonBrightnessDown exec --no-startup-id ~/.config/i3/scripts/change-b
 bindsym XF86Display exec --no-startup-id ~/.config/i3/scripts/autoxrandr
 
 exec_always --no-startup-id ~/.config/i3/scripts/autoxrandr
+exec_always --no-startup-id bash ~/.config/i3/scripts/xinput-config
 exec_always --no-startup-id xset r rate 300 25
 exec --no-startup-id dropbox start
 exec_always --no-startup-id blueman-applet
@@ -228,3 +245,8 @@ mode "$mode_system" {
 }
 bindsym $mod+Shift+p mode "$mode_system"
 bindsym Control+Mod1+l exec --no-startup-id ~/.config/i3/scripts/i3exit lock
+
+bindsym $mod+z exec --no-startup-id ~/.config/i3/scripts/precision-deft-pro-toggle
+bindsym --border --whole-window button12 exec --no-startup-id ~/.config/i3/scripts/precision-deft-pro-toggle
+
+bindsym $mod+Shift+Delete exec --no-startup-id sudo ~/.config/i3/scripts/toggle-monitor-input

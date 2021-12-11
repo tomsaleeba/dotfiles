@@ -18,11 +18,6 @@ fi
 
 export NVM_DIR=$HOME/.nvm
 
-secretFile=$HOME/.secret-zshrc
-if [ -f $secretFile ]; then
-  source $secretFile
-fi
-
 possibleJavaHome=/usr/lib/jvm/default-runtime
 [ -d $possibleJavaHome ] && {
   export JAVA_HOME=$possibleJavaHome
@@ -127,10 +122,17 @@ alias venv2='virtualenv -p python2 .venv && . .venv/bin/activate'
 alias venv3='virtualenv -p python3 .venv && . .venv/bin/activate'
 alias vim='nvim'
 alias vi='vim'
+alias edit='vim'
 alias editzsh='nvim ~/.zshrc && source ~/.zshrc'
 alias editi3='nvim ~/.config/i3/config'
 alias editrofi='nvim ~/.config/rofi/config'
 alias editvim='nvim ~/.vimrc'
+editssh() {
+  vim ~/.ssh/config
+  # clear rofi SSH cache
+  # TODO be smarter and only clear the entries that no longer exit
+  rm -f ~/.cache/rofi-2.sshcache
+}
 alias xo=xdg-open
 alias icat='kitty +kitten icat'
 alias kcat=icat
@@ -236,27 +238,25 @@ nvm() {
   nvm "$@"
 }
 
-yarn() {
-  which npm &> /dev/null && {
-    unset -f yarn
-  } || {
+nvmPreload() {
+  theCmd=${1:?name of command to run}
+  which npm &> /dev/null || {
     echo "running 'nvm ls' to load correct node"
     nvm ls > /dev/null
-    unset -f yarn
   }
-  yarn $@
+  unalias $theCmd
+  eval $@
 }
+alias mix='nvmPreload mix'
+alias pnpm='nvmPreload pnpm'
+# can't make an npm alias because it's our canary above
+alias quasar='nvmPreload quasar'
+alias yarn='nvmPreload yarn'
 
-quasar() {
-  which npm &> /dev/null && {
-    unset -f quasar
-  } || {
-    echo "running 'nvm ls' to load correct node"
-    nvm ls > /dev/null
-    unset -f quasar
-  }
-  quasar $@
-}
+secretFile=$HOME/.secret-zshrc
+if [ -f $secretFile ]; then
+  source $secretFile
+fi
 
 # thanks for once-a-day compinit https://medium.com/@dannysmith/little-thing-2-speeding-up-zsh-f1860390f92
 autoload -Uz compinit
