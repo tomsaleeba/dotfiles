@@ -140,13 +140,13 @@ case $(hostname) in
           #--output $builtinDisplay --auto --below HDMI-0 # enables 3rd display
       exit
     fi
-    if [[ $connectedDisplays == 'DP-0 eDP-1-1 ' ]]; then
-      echo 'Lenovo X1 Extreme Gen2: DP + laptop displays'
-        runXrandr \
-        --output DP-0 --mode 1680x1050 \
-        --output eDP-1-1 --mode 1600x900 --left-of DP-0
-      exit
-    fi
+    # if [[ $connectedDisplays == 'DP-0 eDP-1-1 ' ]]; then
+    #   echo 'Lenovo X1 Extreme Gen2: DP + laptop displays'
+    #     runXrandr \
+    #     --output DP-0 --mode 1680x1050 \
+    #     --output eDP-1-1 --mode 1600x900 --left-of DP-0
+    #   exit
+    # fi
     if [ ! -z "$eDP" -a ! -z "$DP" -a -z "$HDMI" ]; then
       echo 'Lenovo X1 Extreme Gen2: DP and laptop displays (Nvidia)'
       runXrandr \
