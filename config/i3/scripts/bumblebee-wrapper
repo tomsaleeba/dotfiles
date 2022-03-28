@@ -18,5 +18,5 @@ source ~/.profile
       traffic.graphlen=16 \
       traffic.showname=False \
       traffic.states="^down" \
-      traffic.format="{:_>07.1f}" \
+      traffic.format="{: >07.1f}" \
     -t gruvbox-tom

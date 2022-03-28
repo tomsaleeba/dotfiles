@@ -4,6 +4,8 @@ set -euo pipefail
 
 edpScale=1.4
 
+trap "notify-send --urgency critical 'failed to autoxrandr'" ERR
+
 function runXrandr {
   cmd="xrandr $@"
   echo -e "\e[31m[DEBUG]\e[0m" $cmd
