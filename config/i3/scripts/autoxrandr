@@ -165,8 +165,9 @@ case $(hostname) in
     fi
     echo 'Lenovo X1 Extreme Gen2 using built-in display'
     runXrandr \
-      --output $HDMI --off \
-      --output $DP --off \
+      --output $(xrandr | grep HDMI | cut -f1 -d ' ') --off \
+      --output DP-0 --off \
+      --output DP-1 --off \
       --output $builtinDisplay --auto --primary
     ;;
   * )
