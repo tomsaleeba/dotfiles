@@ -1,0 +1,5 @@
+Found link in https://www.maketecheasier.com/draw-arrows-in-gimp/
+
+...which takes you to https://www.gimp-forum.net/Thread-Arrow-Script?pid=1401#pid1401
+
+...which you then download the zip from http://programmer97.byethost10.com/Files/arrow.zip
