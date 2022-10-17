@@ -5,6 +5,12 @@
 # ...and tweak the `head` command to control how many you check
 # Thanks https://blog.takanabe.tokyo/en/2020/04/remove-squash-merged-local-git-branches/
 
+# To do the cleanup, you can do something like
+#   grep '^mer' results-from-above.txt | sort > merged.txt
+#   cat merged.txt | cut -d ' ' -f2 | sed 's_remotes/origin/__' | xargs -I'{}' echo 'git checkout {} && git push --delete origin {}' > commands.sh
+# then you can inspect `commands.sh` and if you're happy, run it
+#   bash commands.sh
+
 set -euo pipefail
 target=${1:?first param must be branch name}
 ANCESTOR=`git merge-base master $target`

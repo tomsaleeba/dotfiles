@@ -149,6 +149,14 @@ case $(hostname) in
     #     --output eDP-1-1 --mode 1600x900 --left-of DP-0
     #   exit
     # fi
+    if [[ $connectedDisplays == 'DP-1 eDP-1-1 ' ]]; then
+      echo 'Lenovo X1 Extreme Gen2: USB-C DP + laptop displays'
+        runXrandr \
+          --output DP-1 --mode 1920x1080 --scale 1.5 \
+          --output eDP-1-1 --mode 1920x1080 --scale 1.5 --primary --right-of DP-1
+        runXrandr --output eDP-1-1 --pos 2880x0 # can't get it to work as part of the above command *shrugs*
+      exit
+    fi
     if [ ! -z "$eDP" -a ! -z "$DP" -a -z "$HDMI" ]; then
       echo 'Lenovo X1 Extreme Gen2: DP and laptop displays (Nvidia)'
       runXrandr \

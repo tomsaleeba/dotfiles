@@ -7,3 +7,9 @@ last 20 items. The binding is configured in `~/.config/dunst/dunstrc`:
 Note that `mod4` is the `gui/windows` key.
 
 Thanks https://archived.forum.manjaro.org/t/how-to-view-notifications-history-with-tray-icon-for-i3/105691/2
+
+
+# Sway testing
+Things to kill
+- zeit
+- flashfocus

@@ -5,16 +5,13 @@
 
 # If you come from bash you might have to change your $PATH.
 export PATH=$HOME/.config/i3/scripts/:$PATH
-export PATH=$HOME/.local/bin:$PATH
 export PATH=$HOME/.config/yarn/global/node_modules/.bin:$PATH
-export PATH="$PATH:$HOME/.rvm/bin"
-export PATH=$PATH:"$HOME/.pub-cache/bin"
 export PATH=$HOME/bin:$PATH # needs to be early in the list
 
 if [ "$(uname)" = "Darwin" ]; then
   export PATH="/usr/local/opt/mysql-client/bin:$PATH"
-  alias pc='PASSWORD_STORE_ENABLE_EXTENSIONS=true pass clip'
 fi
+export PASSWORD_STORE_ENABLE_EXTENSIONS=true
 
 export NVM_DIR=$HOME/.nvm
 
@@ -84,7 +81,7 @@ COMPLETION_WAITING_DOTS="true"
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git zsh-autosuggestions zsh-z)
+plugins=(zsh-autosuggestions zsh-z)
 # git clone https://github.com/agkozak/zsh-z ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-z
 # git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
 
@@ -118,17 +115,19 @@ EDITOR='nvim'
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
 alias l=ls
+alias lrt='ls -lrt'
 alias venv2='virtualenv -p python2 .venv && . .venv/bin/activate'
 alias venv3='virtualenv -p python3 .venv && . .venv/bin/activate'
 alias vim='nvim'
 alias vi='vim'
+alias vf='f=$(fd --hidden --exclude .git --type f | fzf); [ -n "$f" ] && vim $f'
 alias edit='vim'
-alias editzsh='nvim ~/.zshrc && source ~/.zshrc'
-alias editi3='nvim ~/.config/i3/config'
+alias editzsh='/usr/bin/nvim ~/.zshrc && source ~/.zshrc'
+alias editi3='/usr/bin/nvim ~/.config/i3/config'
 alias editrofi='nvim ~/.config/rofi/config'
 alias editvim='nvim ~/.vimrc'
 editssh() {
-  vim ~/.ssh/config
+  /usr/bin/nvim ~/.ssh/config
   # clear rofi SSH cache
   # TODO be smarter and only clear the entries that no longer exit
   rm -f ~/.cache/rofi-2.sshcache
@@ -139,6 +138,24 @@ alias kcat=icat
 alias tw=timew
 alias tws="timew summary :ids"
 alias tww="timew week"
+alias gci="git commit -m"
+alias gco="git checkout"
+alias gd="git diff"
+alias gds="git diff --staged"
+alias ga="git add"
+alias ga.="git add ."
+alias gs="git status"
+alias gpl="git pull --prune"
+alias gps="git push"
+alias gb="git branch"
+alias gbD="git branch -D"
+alias gm="git merge"
+function nofj {
+  # runs a command without firejail
+  PATH=/usr/bin:$PATH $*
+}
+alias gcloud='firejail --quiet /zeta/tools/google-cloud-sdk/bin/gcloud'
+
 
 bindkey \^U backward-kill-line
 
@@ -159,12 +176,12 @@ cdtemp() {
 # thanks https://stackoverflow.com/a/24347344/1410035
 ssh-auth() {
   # make sure your ssh keys are added with: ssh-add <key>
-  theFile=/tmp/ssh-agent.sh
+  local theFile=/tmp/ssh-agent.sh
   [ "$(uname)" = "Darwin" ] && {
-    sshAgentPid=$(ps -A | grep ssh-agent | awk '{print $1}')
+    local sshAgentPid=$(ps -A | grep ssh-agent | awk '{print $1}')
     return # FIXME remove line, actually handle for macOS
   } || {
-    sshAgentPid=`ps -C ssh-agent -o pid:1=` # :1 means no padding spaces
+    local sshAgentPid=`ps -C ssh-agent -o pid:1=` # :1 means no padding spaces
   }
 
   # if we have a file, source it
@@ -206,7 +223,11 @@ ssh-auth() {
 git() { ssh-auth; command git "$@" }
 export ssh() { ssh-auth; command ssh "$@"; }
 scp() { ssh-auth; command scp "$@"; }
-pass() { ssh-auth; command pass "$@"; }
+pass() {
+  export EDITOR='firejail --net=none --noprofile /usr/bin/nvim -u NORC'
+  ssh-auth
+  command pass "$@"
+}
 
 kssh() {
   ssh-auth
@@ -227,7 +248,7 @@ nvm() {
     source ~/.nvm/nvm.sh
     # source ~/.nvm/nvm-exec # FIXME do we need this?
   elif [ -f $BREW_NVM_DIR/nvm.sh ]; then
-    # install from homebrew on macOS 
+    # install from homebrew on macOS
     source /usr/local/opt/nvm/nvm.sh
     # source /usr/local/opt/nvm/nvm-exec # FIXME do we need this?
   else
@@ -286,7 +307,7 @@ WORDCHARS='|*?_-.[]~=&;!#$%^(){}<>'
 
 export jsbeautify_indent_size=2
 
-export BROWSER=/usr/bin/firefox
+export BROWSER=/usr/local/bin/firefox
 
 # cache busting for command completion
 # thanks https://unix.stackexchange.com/a/2180/68885
@@ -308,14 +329,7 @@ else
   echo "No NVM bash completion"
 fi
 
-# The next line updates PATH for the Google Cloud SDK.
-if [ -f '/zeta/tools/google-cloud-sdk/path.zsh.inc' ]; then . '/zeta/tools/google-cloud-sdk/path.zsh.inc'; fi
-
 # The next line enables shell command completion for gcloud.
 if [ -f '/zeta/tools/google-cloud-sdk/completion.zsh.inc' ]; then . '/zeta/tools/google-cloud-sdk/completion.zsh.inc'; fi
 
 # zprof # uncomment, along with first line, for profiling
-
-#THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
-export SDKMAN_DIR="/home/tom/.sdkman"
-[[ -s "/home/tom/.sdkman/bin/sdkman-init.sh" ]] && source "/home/tom/.sdkman/bin/sdkman-init.sh"
