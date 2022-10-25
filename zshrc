@@ -122,7 +122,17 @@ alias vim='nvim'
 alias vi='vim'
 alias vf='f=$(fd --hidden --exclude .git --type f | fzf); [ -n "$f" ] && vim $f'
 alias edit='vim'
-alias editzsh='/usr/bin/nvim ~/.zshrc && source ~/.zshrc'
+function editzsh {
+  if [ -f ~/.zshrc ]; then
+    /usr/bin/nvim ~/.zshrc && source ~/.zshrc
+    return 0
+  elif [ -f ~/.config/zsh/.zshrc ]; then
+    /usr/bin/nvim ~/.config/zsh/.zshrc && source ~/.config/zsh/.zshrc
+    return 0
+  fi
+  echo "[ERROR] no zshrc file found" >&2
+  return 1
+}
 alias editi3='/usr/bin/nvim ~/.config/i3/config'
 alias editrofi='nvim ~/.config/rofi/config'
 alias editvim='nvim ~/.vimrc'
@@ -155,6 +165,18 @@ function nofj {
   PATH=/usr/bin:$PATH $*
 }
 alias gcloud='firejail --quiet /zeta/tools/google-cloud-sdk/bin/gcloud'
+alias hf="history | fzf"  # FIXME prepop command, if one is selected
+function yay-autoremove {
+  # thanks https://www.reddit.com/r/archlinux/comments/3eljbe/aptget_autoremove_for_pacman/ctg2zoh
+  sudo pacman -Rcns $(pacman -Qdtq)
+}
+function yay-update {
+  # trying with confirmations to look at diffs.
+  # Ideally I'd only be prompted if certain fields in PKGBUILD change, like the
+  # source location. But then there's still a risk of the source repo getting
+  # owned.
+  yay -Syu #--noconfirm
+}
 
 
 bindkey \^U backward-kill-line
