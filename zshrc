@@ -166,6 +166,8 @@ function nofj {
 }
 alias gcloud='firejail --quiet /zeta/tools/google-cloud-sdk/bin/gcloud'
 alias hf="history | fzf"  # FIXME prepop command, if one is selected
+alias gpumax="sudo intel_gpu_frequency --max && sudo intel_gpu_frequency --get"
+
 function yay-autoremove {
   # thanks https://www.reddit.com/r/archlinux/comments/3eljbe/aptget_autoremove_for_pacman/ctg2zoh
   sudo pacman -Rcns $(pacman -Qdtq)
