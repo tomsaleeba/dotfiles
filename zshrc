@@ -123,11 +123,11 @@ alias vi='vim'
 alias vf='f=$(fd --hidden --exclude .git --type f | fzf); [ -n "$f" ] && vim $f'
 alias edit='vim'
 function editzsh {
-  if [ -f ~/.zshrc ]; then
-    /usr/bin/nvim ~/.zshrc && source ~/.zshrc
-    return 0
-  elif [ -f ~/.config/zsh/.zshrc ]; then
+  if [ -f ~/.config/zsh/.zshrc ]; then
     /usr/bin/nvim ~/.config/zsh/.zshrc && source ~/.config/zsh/.zshrc
+    return 0
+  elif [ -f ~/.zshrc ]; then
+    /usr/bin/nvim ~/.zshrc && source ~/.zshrc
     return 0
   fi
   echo "[ERROR] no zshrc file found" >&2
@@ -166,7 +166,18 @@ function nofj {
 }
 alias gcloud='firejail --quiet /zeta/tools/google-cloud-sdk/bin/gcloud'
 alias hf="history | fzf"  # FIXME prepop command, if one is selected
+if [ -f "/usr/share/fzf/key-bindings.zsh" ]; then
+  # https://github.com/junegunn/fzf#key-bindings-for-command-line
+  #   CTRL-T - Paste the selected files and directories onto the command-line
+  #   CTRL-R - Paste the selected command from history onto the command-line
+  #   ALT-C - cd into the selected directory
+  source /usr/share/fzf/key-bindings.zsh
+fi
 alias gpumax="sudo intel_gpu_frequency --max && sudo intel_gpu_frequency --get"
+alias dt="cd ~/Downloads/tmp"
+alias ct="cd /tmp/tmp.*"
+alias dig="drill"
+alias netstat="ss"  # netstat is deprecated, ss = socket statistics
 
 function yay-autoremove {
   # thanks https://www.reddit.com/r/archlinux/comments/3eljbe/aptget_autoremove_for_pacman/ctg2zoh
@@ -351,6 +362,10 @@ elif [ -s "$BREW_NVM_DIR/etc/bash_completion.d/nvm" ]; then
   \. "/usr/local/opt/nvm/nvm.sh"                # This loads nvm
 else
   echo "No NVM bash completion"
+fi
+
+if [ -n "${IS_IN_FIREJAIL:-}" ]; then
+  PS1="🔥👮${PS1}"
 fi
 
 # The next line enables shell command completion for gcloud.
