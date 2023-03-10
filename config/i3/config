@@ -144,7 +144,7 @@ bindsym $mod+r mode "resize"
 bar {
   output primary
   tray_output primary
-  font pango:DejaVu Sans Mono 9
+  font pango:DejaVu Sans Mono 6
   status_command ~/.config/i3/scripts/bumblebee-wrapper
 }
 
