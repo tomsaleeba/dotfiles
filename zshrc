@@ -178,6 +178,7 @@ alias dt="cd ~/Downloads/tmp"
 alias ct="cd /tmp/tmp.*"
 alias dig="drill"
 alias netstat="ss"  # netstat is deprecated, ss = socket statistics
+alias f="flatpak"
 
 function yay-autoremove {
   # thanks https://www.reddit.com/r/archlinux/comments/3eljbe/aptget_autoremove_for_pacman/ctg2zoh
