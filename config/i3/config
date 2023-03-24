@@ -14,13 +14,11 @@ bindsym $mod+Return exec kitty
 # kill focused window
 bindsym $mod+Shift+q kill
 
-# FIXME need to see if this:
-# 1. works for me
-# 2. can integrate with pass
-# If it does, replace rofi with it
 for_window [class="^launcher$"] floating enable, sticky enable, resize set 30 ppt 60 ppt, border pixel 10
 set $menu exec kitty --class=launcher -e /usr/bin/sway-launcher-desktop
 bindsym $mod+d exec $menu
+
+bindsym $mod+Shift+d exec kitty --class=launcher -e bash $HOME/git/pass-menu/fzf-pass-menu-wrapper.sh
 
 # change focus
 bindsym $mod+j focus left
@@ -188,8 +186,6 @@ gaps outer -4
 client.focused          #4c7899 #285577 #ffffff #2e9ef4   #3bb9bf
 
 focus_follows_mouse no
-
-bindsym $mod+Shift+d exec "rofi-pass --last-used"
 
 bindsym XF86AudioRaiseVolume exec --no-startup-id ~/.config/i3/scripts/change-volume up
 bindsym XF86AudioLowerVolume exec --no-startup-id ~/.config/i3/scripts/change-volume down
