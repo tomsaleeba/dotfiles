@@ -152,10 +152,10 @@ bar {
   font pango:DejaVu Sans Mono 9
   status_command ~/.config/i3/scripts/bumblebee-status/bumblebee-status \
     -m \
-    nvidiagpu cpu memory datetimetz:dadl datetimetz:dutc datetimetz:darg datetime:dloc \
+    redshift nvidiagpu cpu memory datetimetz:dct datetimetz:darg datetimetz:dutc datetime:dloc \
     -p \
-    dadl.format='%H:%M %Z' \
-    dadl.timezone='Australia/Adelaide' \
+    dct.format='%H:%M %Z' \
+    dct.timezone='America/Chicago' \
     dutc.format='%H:%M %Z' \
     dutc.timezone='utc' \
     darg.format='%H:%M ARG' \
@@ -167,8 +167,7 @@ bar {
 }
 
 # move current workspace between monitors
-bindsym $mod+Control+Left move workspace to output left
-bindsym $mod+Control+Right move workspace to output right
+bindsym $mod+Control+Left move workspace to output next
 
 # Make the currently focused window a scratchpad
 bindsym $mod+Shift+minus move scratchpad
