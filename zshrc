@@ -147,7 +147,7 @@ alias gds="git diff --staged"
 alias ga="git add"
 alias ga.="git add ."
 alias gs="git status"
-alias gpl="git pull --prune"
+alias gpl="git pull --prune --tags"
 alias gps="git push"
 alias gb="git branch"
 alias gbD="git branch -D"
@@ -204,12 +204,12 @@ cdtemp() {
 # thanks https://stackoverflow.com/a/24347344/1410035
 ssh-auth() {
   # make sure your ssh keys are added with: ssh-add <key>
-  local theFile=/tmp/ssh-agent.sh
+  local theFile=/run/user/$(id -u)/ssh-agent.sh
   [ "$(uname)" = "Darwin" ] && {
     local sshAgentPid=$(ps -A | grep ssh-agent | awk '{print $1}')
     return # FIXME remove line, actually handle for macOS
   } || {
-    local sshAgentPid=`ps -C ssh-agent -o pid:1=` # :1 means no padding spaces
+    local sshAgentPid=`pgrep -U $(id -u) ssh-agent`
   }
 
   # if we have a file, source it
@@ -219,7 +219,7 @@ ssh-auth() {
   } || ( [[ ! -z "$sshAgentPid" ]] && {
     # if the agent is running, but there's no file (not sure why), fix the situation
     echo "[SSH] ssh-agent is running, but $theFile does not exist" > /dev/stderr
-    pkill ssh-agent
+    pkill --uid $(id -u) ssh-agent
     unset SSH_AGENT_PID
   } )
 
@@ -227,7 +227,7 @@ ssh-auth() {
   [[ ! -z "$SSH_AGENT_PID" ]] && [[ "$sshAgentPid" != "$SSH_AGENT_PID" ]] && {
     echo "[SSH] SSH_AGENT_PID($SSH_AGENT_PID) != PID from ps($sshAgentPid)" > /dev/stderr
     rm -f $theFile
-    pkill ssh-agent
+    pkill --uid $(id -u) ssh-agent
     unset SSH_AGENT_PID
   } || {
     # echo "[SSH] SSH_AGENT_PID is not set or SSH_AGENT_PID($SSH_AGENT_PID) == PID from ps($sshAgentPid)" > /dev/stderr
@@ -301,6 +301,26 @@ alias pnpm='nvmPreload pnpm'
 # can't make an npm alias because it's our canary above
 alias quasar='nvmPreload quasar'
 alias yarn='nvmPreload yarn'
+
+cpown() {  # cp + chown
+  if [ $# != 2 ]; then
+    echo "[ERROR] only 2 params supported"
+    return 1
+  fi
+  set -x
+  local targetPath=${*: -1}
+  sudo cp --dereference -r $*
+  local targetUser=""
+  sudo test -e "$targetPath" && {
+    # if target exists, check that
+    targetUser=$(sudo stat -c "%U" "$targetPath")
+  } || {
+    # if target doesn't exist, check parent
+    targetUser=$(sudo stat -c "%U" "$(dirname $targetPath)")
+  }
+  # FIXME to support >2 params, need to iterate all the sources to chown
+  sudo chown -R $targetUser:$targetUser $targetPath/$(basename $1)
+}
 
 secretFile=$HOME/.secret-zshrc
 if [ -f $secretFile ]; then
