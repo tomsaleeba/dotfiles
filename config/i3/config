@@ -7,6 +7,10 @@ font pango:monospace 8
 
 # Use Mouse+$mod to drag floating windows to their wanted position
 floating_modifier $mod
+# right-click for floating toggle
+bindsym button3 floating toggle
+# middle-click for kill
+bindsym button2 kill
 
 # start a terminal
 bindsym $mod+Return exec kitty
@@ -14,7 +18,18 @@ bindsym $mod+Return exec kitty
 # kill focused window
 bindsym $mod+Shift+q kill
 
-for_window [class="^launcher$"] floating enable, sticky enable, resize set 30 ppt 60 ppt, border pixel 10
+floating_maximum_size 2600 x 1800
+
+# always want to highlight the currently focused window
+for_window [all] border pixel 1, title_window_icon yes
+for_window [floating] border normal
+for_window [class="ld-musl-x86_64.so.1" instance="ld-musl-x86_64.so.1"] floating enable
+# FIXME it works, but the window resizes itself shortly after opening, arrrg!
+for_window [window_role="GtkFileChooserDialog"] floating disable, floating enable, resize set 1500 1200, move position center
+# more ideas at https://wiki.archlinux.org/title/I3#Correct_handling_of_floating_dialogs
+for_window [window_role="About"] floating enable
+for_window [class="^launcher$"] floating enable, sticky enable, resize set 50 ppt 60 ppt, border pixel 10, move position center
+
 set $menu exec kitty --class=launcher -e /usr/bin/sway-launcher-desktop
 bindsym $mod+d exec $menu
 
@@ -152,7 +167,7 @@ bar {
   font pango:DejaVu Sans Mono 9
   status_command ~/.config/i3/scripts/bumblebee-status/bumblebee-status \
     -m \
-    redshift nvidiagpu cpu memory datetimetz:dct datetimetz:darg datetimetz:dutc datetime:dloc \
+    redshift nvidiagpu cpu memory datetimetz:dct datetimetz:darg datetimetz:dutc datetimetz:dind datetime:dloc \
     -p \
     dct.format='%H:%M %Z' \
     dct.timezone='America/Chicago' \
@@ -160,6 +175,8 @@ bar {
     dutc.timezone='utc' \
     darg.format='%H:%M ARG' \
     darg.timezone='America/Argentina/Buenos_Aires' \
+    dind.format='%H:%M IND' \
+    dind.timezone='Asia/Kolkata' \
     dloc.format='%Y-%m-%d %H:%M:%S %Z (local)' \
     memory.format="{used}/{total} ({percent:3.0f}%)" \
     memory.byte_fmt="{:2.1f}" \
@@ -174,9 +191,6 @@ bindsym $mod+Shift+minus move scratchpad
 
 # Show the first scratchpad window
 bindsym $mod+minus scratchpad show
-
-for_window [class=".*"] border pixel 1
-for_window [class="ld-musl-x86_64.so.1" instance="ld-musl-x86_64.so.1"] floating enable
 
 gaps inner 4
 gaps outer -4
