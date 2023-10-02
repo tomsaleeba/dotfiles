@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # thanks https://faq.i3wm.org/question/2332/flexible-monitor-setup.1.html
 set -euo pipefail
 
@@ -8,7 +8,11 @@ trap "notify-send --urgency critical 'failed to autoxrandr'" ERR
 
 function runXrandr {
   cmd="xrandr $@"
-  echo -e "\e[31m[DEBUG]\e[0m" $cmd
+  echo -e "\e[32m[DEBUG]\e[0m" $cmd
+  if [ ! -z "${DRYRUN:-}" ]; then
+    echo "In dry-run mode, no action taken"
+    return
+  fi
   eval $cmd
 }
 
@@ -57,9 +61,6 @@ case $(hostname) in
     echo "  HDMI=$HDMI"
     DP=$(echo $connectedDisplays | grep -o '\<DP[-0-9]*\>' || true)
     echo "  DP=$DP"
-    if [ ! -z "${DRYRUN:-}" ]; then
-      exit
-    fi
     if [ ! -z "$eDP" -a ! -z "$HDMI" -a -z "$DP" ]; then
       echo 'Lenovo X1 Extreme Gen2: HDMI and laptop displays (Nvidia)'
       if xrandr | grep -A 1 $HDMI | grep 3840x2160; then
@@ -152,9 +153,8 @@ case $(hostname) in
     if [[ $connectedDisplays == 'DP-1 eDP-1-1 ' ]]; then
       echo 'Lenovo X1 Extreme Gen2: USB-C DP + laptop displays'
         runXrandr \
-          --output DP-1 --mode 1920x1080 --scale 1.5 \
-          --output eDP-1-1 --mode 1920x1080 --scale 1.5 --primary --right-of DP-1
-        runXrandr --output eDP-1-1 --pos 2880x0 # can't get it to work as part of the above command *shrugs*
+          --output eDP-1-1 --mode 1920x1080 --scale 1.4 --pos 0x0 \
+          --output DP-1 --mode 3840x2160 --rate 144 --scale 1 --primary --pos 2688x0
       exit
     fi
     if [ ! -z "$eDP" -a ! -z "$DP" -a -z "$HDMI" ]; then
