@@ -152,6 +152,9 @@ alias gps="git push"
 alias gb="git branch"
 alias gbD="git branch -D"
 alias gm="git merge"
+alias gr="git remote -v"
+alias grs="git restore --staged"
+alias gl="git log"
 function nofj {
   # runs a command without firejail
   PATH=/usr/bin:$PATH $*
@@ -167,10 +170,12 @@ if [ -f "/usr/share/fzf/key-bindings.zsh" ]; then
 fi
 alias gpumax="sudo intel_gpu_frequency --max && sudo intel_gpu_frequency --get"
 alias dt="cd ~/Downloads/tmp"
-alias ct="cd /tmp/tmp.*"
+alias dh="cd ~/Dropbox/home"
+alias ct="cd \$(find /tmp -uid \$(id -u) -name 'tmp.*' -type d 2> /dev/null | head -n1)"
 alias dig="drill"
 alias netstat="ss"  # netstat is deprecated, ss = socket statistics
 alias f="flatpak"
+alias dps='docker ps --format "table {{.Names}}\t{{.ID}}\t{{.Command}}\t{{.Status}}\t{{.Ports}}" | cut -c-$(tput cols)'
 
 function yay-autoremove {
   # thanks https://www.reddit.com/r/archlinux/comments/3eljbe/aptget_autoremove_for_pacman/ctg2zoh
@@ -245,21 +250,39 @@ ssh-auth() {
     source $theFile > /dev/null
   }
 
+  local loadedKeyCount=$(ssh-add -l | grep SHA | wc -l)
+  if [ $loadedKeyCount = 0 ]; then
+    if [ -t 1 ] ; then  # output is a terminal (not a pipe), thanks https://stackoverflow.com/a/911213/1410035
+      >&2 echo "[WARN] zero keys are loaded in ssh-agent"
+    fi
+  fi
+
   # be sure to add your keys in ~/.ssh/config with AddKeysToAgent and they'll be lazy loaded
   # echo "[SSH] SSH_AGENT_PID=$SSH_AGENT_PID" > /dev/stderr
 }
-git() { ssh-auth; command git "$@" }
+git() {
+  if [ -t 1 ]; then
+    # only call for interactive sessions
+    ssh-auth
+  fi
+  command git "$@"
+}
 export ssh() { ssh-auth; command ssh "$@"; }
 scp() { ssh-auth; command scp "$@"; }
 pass() {
-  export EDITOR='firejail --net=none --noprofile /usr/bin/nvim -u NORC'
   ssh-auth
-  command pass "$@"
+  # FIXME why doesn't firejail exit after?
+  env EDITOR='fjnvim' /usr/bin/pass "$@"
 }
 
 kssh() {
   ssh-auth
   kitty +kitten ssh $@
+}
+
+mosh() {
+  ssh-auth
+  command mosh $@
 }
 
 # thanks for the lazy-load idea https://medium.com/@dannysmith/little-thing-2-speeding-up-zsh-f1860390f92
@@ -309,17 +332,19 @@ cpown() {  # cp + chown
   fi
   set -x
   local targetPath=${*: -1}
-  sudo cp --dereference -r $*
-  local targetUser=""
   sudo test -e "$targetPath" && {
-    # if target exists, check that
-    targetUser=$(sudo stat -c "%U" "$targetPath")
-  } || {
-    # if target doesn't exist, check parent
-    targetUser=$(sudo stat -c "%U" "$(dirname $targetPath)")
+    # if target exists (should be a dir), check that
+    local targetUser=$(sudo stat -c "%U" "$targetPath")
+    sudo cp --dereference -r $*
+    # FIXME to support >2 params, need to iterate all the sources to chown
+    sudo chown -R $targetUser:$targetUser "$targetPath/$(basename $1)"
+    return
   }
+  # if target doesn't exist (target is a file), check parent
+  local targetUser=$(sudo stat -c "%U" "$(dirname $targetPath)")
+  sudo cp --dereference -r $*
   # FIXME to support >2 params, need to iterate all the sources to chown
-  sudo chown -R $targetUser:$targetUser $targetPath/$(basename $1)
+  sudo chown -R $targetUser:$targetUser "$targetPath"
 }
 
 secretFile=$HOME/.secret-zshrc
