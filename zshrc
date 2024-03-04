@@ -140,6 +140,7 @@ alias kcat=icat
 alias tw=timew
 alias tws="timew summary :ids"
 alias tww="timew week"
+alias twd="timew day"
 alias gci="git commit -m"
 alias gco="git checkout"
 alias gd="git diff"
@@ -176,6 +177,11 @@ alias dig="drill"
 alias netstat="ss"  # netstat is deprecated, ss = socket statistics
 alias f="flatpak"
 alias dps='docker ps --format "table {{.Names}}\t{{.ID}}\t{{.Command}}\t{{.Status}}\t{{.Ports}}" | cut -c-$(tput cols)'
+alias dpsa='docker ps --all --format "table {{.Names}}\t{{.ID}}\t{{.Command}}\t{{.Status}}\t{{.Ports}}" | cut -c-$(tput cols)'
+alias dpsa='docker ps --all --format "table {{.Names}}\t{{.ID}}\t{{.Command}}\t{{.Status}}\t{{.Ports}}" | cut -c-$(tput cols)'
+alias di='docker images'
+alias dih='docker images | head'
+alias dc='docker-compose'
 
 function yay-autoremove {
   # thanks https://www.reddit.com/r/archlinux/comments/3eljbe/aptget_autoremove_for_pacman/ctg2zoh
@@ -313,8 +319,8 @@ nvm() {
 nvmPreload() {
   theCmd=${1:?name of command to run}
   which npm &> /dev/null || {
-    echo "running 'nvm ls' to load correct node"
-    nvm ls > /dev/null
+    echo "running 'nvm current' to load correct node"
+    nvm current > /dev/null
   }
   unalias $theCmd
   eval $@
@@ -325,26 +331,38 @@ alias pnpm='nvmPreload pnpm'
 alias quasar='nvmPreload quasar'
 alias yarn='nvmPreload yarn'
 
-cpown() {  # cp + chown
-  if [ $# != 2 ]; then
-    echo "[ERROR] only 2 params supported"
-    return 1
-  fi
+_xxown() {
   set -x
   local targetPath=${*: -1}
   sudo test -e "$targetPath" && {
     # if target exists (should be a dir), check that
     local targetUser=$(sudo stat -c "%U" "$targetPath")
-    sudo cp --dereference -r $*
+    eval "sudo ${THE_OP:?} '$1' '$2'"
     # FIXME to support >2 params, need to iterate all the sources to chown
     sudo chown -R $targetUser:$targetUser "$targetPath/$(basename $1)"
     return
   }
   # if target doesn't exist (target is a file), check parent
   local targetUser=$(sudo stat -c "%U" "$(dirname $targetPath)")
-  sudo cp --dereference -r $*
+  eval "sudo ${THE_OP:?} '$1' '$2'"
   # FIXME to support >2 params, need to iterate all the sources to chown
   sudo chown -R $targetUser:$targetUser "$targetPath"
+}
+
+cpown() {  # cp + chown
+  if [ $# != 2 ]; then
+    echo "[ERROR] only 2 params supported"
+    return 1
+  fi
+  THE_OP="cp --dereference -r" _xxown $*
+}
+
+mvown() {  # mv + chown
+  if [ $# != 2 ]; then
+    echo "[ERROR] only 2 params supported"
+    return 1
+  fi
+  THE_OP=mv _xxown $*
 }
 
 secretFile=$HOME/.secret-zshrc
