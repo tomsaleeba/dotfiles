@@ -17,31 +17,6 @@ function runXrandr {
 }
 
 case $(hostname) in
-  tom-pc )
-    xrandr | grep ' connected' | grep -q VGA-0 && {
-      echo 'Home PC with VGA'
-      runXrandr --output VGA-0 --auto --left-of DVI-I-1
-      exit 0
-    }
-    echo 'Home PC with HDMI'
-    runXrandr --output LVDS1 --auto --left-of HDMI1
-    ;;
-  tom-w650eh )
-    for output in $(xrandr | grep '\Wconnected' | awk '{ print $1 }'); do
-      if [[ $output =~ ^LVDS.*$ ]]; then
-        lvds=$output
-      fi
-    done
-    for output in $(xrandr | grep '\Wconnected' | awk '{ print $1 }'); do
-      if [[ ! $output =~ ^LVDS.*$ ]]; then
-        echo 'W650EH using two external displays via HDMI + VGA'
-        runXrandr --output HDMI1 --auto --left-of VGA1 --output LVDS1 --off
-        exit
-      fi
-    done
-    echo 'W650EH using built-in display'
-    runXrandr --output $lvds --auto
-    ;;
   tom-x1eg2 )
     # FIXME is this still required? Can we just use $eDP?
     for output in $(xrandr | grep '\Wconnected' | awk '{ print $1 }'); do
@@ -151,9 +126,17 @@ case $(hostname) in
     #   exit
     # fi
     if [[ $connectedDisplays == 'DP-1 eDP-1-1 ' ]]; then
-      echo 'Lenovo X1 Extreme Gen2: USB-C DP + laptop displays'
+      echo 'Lenovo X1 Extreme Gen2: USB-C altmode DP + laptop displays'
         runXrandr \
           --output eDP-1-1 --mode 1920x1080 --scale 1.4 --pos 0x0 \
+          --output DP-1 --mode 3840x2160 --rate 144 --scale 1 --primary --pos 2688x0
+      exit
+    fi
+    if [[ $connectedDisplays == 'DP-0 DP-1 eDP-1-1 ' ]]; then
+      echo 'Lenovo X1 Extreme Gen2: USB-C DP + USC-C altmode DP + laptop displays'
+        runXrandr \
+          --output eDP-1-1 --mode 1920x1080 --scale 1.4 --pos 0x0 \
+          --output DP-0 --mode 2560x1600 --rate 120 --scale 1 --pos 1509x2160 \
           --output DP-1 --mode 3840x2160 --rate 144 --scale 1 --primary --pos 2688x0
       exit
     fi
