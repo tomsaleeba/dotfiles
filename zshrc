@@ -113,6 +113,8 @@ alias venv3='virtualenv -p python3 .venv && . .venv/bin/activate'
 alias vim='nvim'
 alias vi='vim'
 alias vf='f=$(fd --hidden --exclude .git --type f | fzf); [ -n "$f" ] && vim $f'
+# sb = switch branch
+alias sb='f=$(git branch | cut -c3- | fzf); [ -n "$f" ] && git checkout $f'
 alias edit='vim'
 function editzsh {
   if [ -f ~/.config/zsh/.zshrc ]; then
