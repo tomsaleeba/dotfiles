@@ -112,7 +112,7 @@ alias venv2='virtualenv -p python2 .venv && . .venv/bin/activate'
 alias venv3='virtualenv -p python3 .venv && . .venv/bin/activate'
 alias vim='nvim'
 alias vi='vim'
-alias vf='f=$(fd --hidden --exclude .git --type f | fzf); [ -n "$f" ] && vim $f'
+alias vf='f=$(fd --hidden --exclude .git --exclude .yarn/cache --type f | fzf); [ -n "$f" ] && vim $f'
 # sb = switch branch
 alias sb='f=$(git branch | cut -c3- | fzf); [ -n "$f" ] && git checkout $f'
 alias edit='vim'
@@ -184,6 +184,14 @@ alias dpsa='docker ps --all --format "table {{.Names}}\t{{.ID}}\t{{.Command}}\t{
 alias di='docker images'
 alias dih='docker images | head'
 alias dc='docker-compose'
+
+function jwt {
+  if [ -n "${1:-}" ]; then
+    echo "$1" | jq -R 'gsub("-";"+") | gsub("_";"/") | split(".") | .[1] | @base64d | fromjson'
+  else
+    jq -R 'gsub("-";"+") | gsub("_";"/") | split(".") | .[1] | @base64d | fromjson'
+  fi
+}
 
 function yay-autoremove {
   # thanks https://www.reddit.com/r/archlinux/comments/3eljbe/aptget_autoremove_for_pacman/ctg2zoh
@@ -332,6 +340,7 @@ alias pnpm='nvmPreload pnpm'
 # can't make an npm alias because it's our canary above
 alias quasar='nvmPreload quasar'
 alias yarn='nvmPreload yarn'
+alias nga='nvmPreload nga'
 
 _xxown() {
   set -x
