@@ -102,6 +102,7 @@ source $ZSH/oh-my-zsh.sh
 #   export EDITOR='mvim'
 # fi
 EDITOR='nvim'
+KUBE_EDITOR=$EDITOR
 
 # Compilation flags
 # export ARCHFLAGS="-arch x86_64"
@@ -113,8 +114,8 @@ alias venv3='virtualenv -p python3 .venv && . .venv/bin/activate'
 alias vim='nvim'
 alias vi='vim'
 alias vf='f=$(fd --hidden --exclude .git --exclude .yarn/cache --type f | fzf); [ -n "$f" ] && vim $f'
-# sb = switch branch
-alias sb='f=$(git branch | cut -c3- | fzf); [ -n "$f" ] && git checkout $f'
+alias sb='f=$(git branch | cut -c3- | fzf); [ -n "$f" ] && git checkout $f'  # sb = switch branch
+alias sba='f=$(git branch -a | cut -c3- | fzf); [ -n "$f" ] && git checkout $f'
 alias edit='vim'
 function editzsh {
   if [ -f ~/.config/zsh/.zshrc ]; then
@@ -180,10 +181,33 @@ alias netstat="ss"  # netstat is deprecated, ss = socket statistics
 alias f="flatpak"
 alias dps='docker ps --format "table {{.Names}}\t{{.ID}}\t{{.Command}}\t{{.Status}}\t{{.Ports}}" | cut -c-$(tput cols)'
 alias dpsa='docker ps --all --format "table {{.Names}}\t{{.ID}}\t{{.Command}}\t{{.Status}}\t{{.Ports}}" | cut -c-$(tput cols)'
-alias dpsa='docker ps --all --format "table {{.Names}}\t{{.ID}}\t{{.Command}}\t{{.Status}}\t{{.Ports}}" | cut -c-$(tput cols)'
 alias di='docker images'
 alias dih='docker images | head'
 alias dc='docker-compose'
+alias flatseal='flatpak --user run com.github.tchx84.Flatseal'
+alias vscode='XDG_DATA_DIRS=~/.local/share/flatpak/exports/share:$XDG_DATA_DIRS flatpak --user run com.visualstudio.code'
+alias agh='ag --hidden'
+alias sunny='sed -i "s/^\(brightness-day\)=.*/\1=1.0/" $HOME/.config/redshift/redshift.conf && systemctl --user restart redshift-gtk'
+alias overcast='sed -i "s/^\(brightness-day\)=.*/\1=0.9/" $HOME/.config/redshift/redshift.conf && systemctl --user restart redshift-gtk'
+
+function dbvim {
+  local url
+  if [ $# = 1 ]; then
+    url=${1}
+  elif [ $# = 3 ]; then
+    url=mysql://${1}:${2}@${3}
+  fi
+  if [ -z "${url}" ]; then
+    echo "[ERROR] no params passed"
+    echo "[ERROR] usage:"
+    echo "[ERROR]   dbvim mysql://user:pass@host"
+    echo "[ERROR]   dbvim <user> <pass> <host>"
+    # FIXME handle --host, --user and --password for copy-paste from mysql command
+    return 1
+  fi
+  echo "Connecting to $url"
+  DBUI_URL=$url vim -c DBUI -c 'norm jj'
+}
 
 function jwt {
   if [ -n "${1:-}" ]; then
@@ -340,7 +364,6 @@ alias pnpm='nvmPreload pnpm'
 # can't make an npm alias because it's our canary above
 alias quasar='nvmPreload quasar'
 alias yarn='nvmPreload yarn'
-alias nga='nvmPreload nga'
 
 _xxown() {
   set -x
