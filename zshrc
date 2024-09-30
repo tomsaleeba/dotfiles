@@ -110,7 +110,7 @@ KUBE_EDITOR=$EDITOR
 alias l=ls
 alias lrt='ls -lrt'
 alias venv2='virtualenv -p python2 .venv && . .venv/bin/activate'
-alias venv3='virtualenv -p python3 .venv && . .venv/bin/activate'
+alias venv3='python3 -m venv .venv && . .venv/bin/activate'
 alias vim='nvim'
 alias vi='vim'
 alias vf='f=$(fd --hidden --exclude .git --exclude .yarn/cache --type f | fzf); [ -n "$f" ] && vim $f'
@@ -142,7 +142,7 @@ alias icat='kitty +kitten icat'
 alias kcat=icat
 alias tw=timew
 alias tws="timew summary :ids"
-alias tww="timew week"
+alias tww="echo '6:24 12:48 19:12 25:36 32:00'; timew week"
 alias twd="timew day"
 alias gci="git commit -m"
 alias gco="git checkout"
@@ -189,18 +189,19 @@ alias vscode='XDG_DATA_DIRS=~/.local/share/flatpak/exports/share:$XDG_DATA_DIRS 
 alias agh='ag --hidden'
 alias sunny='sed -i "s/^\(brightness-day\)=.*/\1=1.0/" $HOME/.config/redshift/redshift.conf && systemctl --user restart redshift-gtk'
 alias overcast='sed -i "s/^\(brightness-day\)=.*/\1=0.9/" $HOME/.config/redshift/redshift.conf && systemctl --user restart redshift-gtk'
+alias kitty-split-to-bottom='kitten @ action --self layout_action move_to_screen_edge bottom'
 
 function dbvim {
   local url
   if [ $# = 1 ]; then
     url=${1}
   elif [ $# = 3 ]; then
-    url=mysql://${1}:${2}@${3}
+    url=mariadb://${1}:${2}@${3}
   fi
   if [ -z "${url}" ]; then
     echo "[ERROR] no params passed"
     echo "[ERROR] usage:"
-    echo "[ERROR]   dbvim mysql://user:pass@host"
+    echo "[ERROR]   dbvim mariadb://user:pass@host"
     echo "[ERROR]   dbvim <user> <pass> <host>"
     # FIXME handle --host, --user and --password for copy-paste from mysql command
     return 1

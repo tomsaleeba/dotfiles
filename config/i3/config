@@ -212,7 +212,6 @@ bindsym XF86Display exec --no-startup-id ~/.config/i3/scripts/autoxrandr
 exec_always --no-startup-id ~/.config/i3/scripts/autoxrandr
 exec_always --no-startup-id bash ~/.config/i3/scripts/xinput-config
 exec_always --no-startup-id xset r rate 300 25
-exec --no-startup-id dropbox start
 exec --no-startup-id blueman-applet
 exec --no-startup-id nm-applet
 
