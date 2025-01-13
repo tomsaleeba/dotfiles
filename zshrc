@@ -148,6 +148,7 @@ alias gci="git commit -m"
 alias gco="git checkout"
 alias gd="git diff"
 alias gds="git diff --staged"
+alias gdno="git diff --compact-summary"  # no=name-only, but this output is more informative
 alias ga="git add"
 alias ga.="git add ."
 alias gs="git status"
@@ -176,7 +177,6 @@ alias gpumax="sudo intel_gpu_frequency --max && sudo intel_gpu_frequency --get"
 alias dt="cd ~/Downloads/tmp"
 alias dh="cd ~/Dropbox/home"
 alias ct="cd \$(find /tmp -uid \$(id -u) -name 'tmp.*' -type d 2> /dev/null | head -n1)"
-alias dig="drill"
 alias netstat="ss"  # netstat is deprecated, ss = socket statistics
 alias f="flatpak"
 alias dps='docker ps --format "table {{.Names}}\t{{.ID}}\t{{.Command}}\t{{.Status}}\t{{.Ports}}" | cut -c-$(tput cols)'
