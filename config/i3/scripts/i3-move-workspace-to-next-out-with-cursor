@@ -1,0 +1,20 @@
+#!/bin/bash
+
+workspace_name=$(i3-msg -t get_workspaces | jq -r '.[] | select(.focused).name')
+if [[ -z "$workspace_name" ]]; then
+  notify-send --urgency=CRITICAL "Could not determine focused workspace."
+  exit 1
+fi
+
+i3-msg "move workspace to output next"
+
+workspace_x=$(i3-msg -t get_workspaces \
+  | jq -r ".[] | select(.name == \"$workspace_name\").rect.x + select(.name == \"$workspace_name\").rect.width/2")
+workspace_y=$(i3-msg -t get_workspaces \
+  | jq -r ".[] | select(.name == \"$workspace_name\").rect.y + select(.name == \"$workspace_name\").rect.height/2")
+if [[ -z "$workspace_x" ]] || [[ -z "$workspace_y" ]]; then
+  notify-send --urgency=CRITICAL "Could not determine workspace coordinates."
+  exit 1
+fi
+
+xdotool mousemove --sync "$workspace_x" "$workspace_y"
