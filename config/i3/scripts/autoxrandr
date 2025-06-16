@@ -179,7 +179,7 @@ case $(hostname) in
       | sort \
       | tr '\n' ' ')
     echo "Connected displays: $connectedDisplays"
-    if [[ $connectedDisplays == 'DisplayPort-1 DisplayPort-2 HDMI-A-0 ' ]]; then
+    if [[ $connectedDisplays == 'DisplayPort-0 DisplayPort-1 HDMI-A-0 ' ]]; then
       echo 'Desktop: triple monitors'
         gigabyteMonitor=DisplayPort-1
         forcedModeName="3840x2160_100.00"  # can't get 120hz or 144hz to work
@@ -190,7 +190,7 @@ case $(hostname) in
         fi
         runXrandr \
           --output HDMI-A-0 --mode 1920x1080 --rate 75 --scale 1.5 --pos 0x108 --rotate right \
-          --output DisplayPort-2 --mode 2560x1440 --rate 120 --scale 1 --pos 1620x0 --rotate normal \
+          --output DisplayPort-0 --mode 2560x1440 --rate 120 --scale 1 --pos 1620x0 --rotate normal \
           --output $gigabyteMonitor --mode $forcedModeName --scale 1 --primary --pos 1620x1440 --rotate normal
       exit
     fi
