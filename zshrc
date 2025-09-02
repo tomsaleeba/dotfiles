@@ -109,11 +109,10 @@ KUBE_EDITOR=$EDITOR
 
 alias l=ls
 alias lrt='ls -lrt'
-alias venv2='virtualenv -p python2 .venv && . .venv/bin/activate'
 alias venv3='python3 -m venv .venv && . .venv/bin/activate'
 alias vim='nvim'
 alias vi='vim'
-alias vf='f=$(fd --hidden --exclude .git --exclude .yarn/cache --type f | fzf); [ -n "$f" ] && vim $f'
+alias vf='f=$(fd --hidden --exclude .git --exclude "**/.yarn/cache" --type f | fzf); [ -n "$f" ] && vim $f'
 alias sb='f=$(git branch | cut -c3- | fzf); [ -n "$f" ] && git checkout $f'  # sb = switch branch
 alias sba='f=$(git branch -a | cut -c3- | fzf); [ -n "$f" ] && git checkout $f'
 alias edit='vim'
@@ -142,13 +141,15 @@ alias icat='kitty +kitten icat'
 alias kcat=icat
 alias tw=timew
 alias tws="timew summary :ids"
-alias tww="echo '6:24 12:48 19:12 25:36 32:00'; timew week"
+alias tww="echo '6:24 12:48 19:12 25:36 32:00'; timew week sow to tomorrow"
+alias twpw="timew week sopw to tomorrow"
 alias twd="timew day"
 alias gci="git commit -m"
 alias gco="git checkout"
 alias gd="git diff"
 alias gds="git diff --staged"
 alias gdno="git diff --compact-summary"  # no=name-only, but this output is more informative
+alias gsno="git show --compact-summary"  # no=name-only, but this output is more informative
 alias ga="git add"
 alias ga.="git add ."
 alias gs="git status"
@@ -176,7 +177,14 @@ fi
 alias gpumax="sudo intel_gpu_frequency --max && sudo intel_gpu_frequency --get"
 alias dt="cd ~/Downloads/tmp"
 alias dh="cd ~/Dropbox/home"
-alias ct="cd \$(find /tmp -uid \$(id -u) -name 'tmp.*' -type d 2> /dev/null | head -n1)"
+function ct {
+    local tmp_dir=$(find /tmp -uid $(id -u) -name 'tmp.*' -type d 2> /dev/null | head -n1)
+    if [ -n "$tmp_dir" ]; then
+        cd "$tmp_dir"
+    else
+        return 1
+    fi
+}
 alias netstat="ss"  # netstat is deprecated, ss = socket statistics
 alias f="flatpak"
 alias dps='docker ps --format "table {{.Names}}\t{{.ID}}\t{{.Command}}\t{{.Status}}\t{{.Ports}}" | cut -c-$(tput cols)'
@@ -193,10 +201,13 @@ alias kitty-split-to-bottom='kitten @ action --self layout_action move_to_screen
 
 function dbvim {
   local url
-  if [ $# = 1 ]; then
+  local connectionName
+  if [ $# = 1 ] || [ $# = 2 ]; then
+    echo "[INFO] you might want to add ?ssl-verify-server-cert=false"
     url=${1}
+    connectionName=${2:-}
   elif [ $# = 3 ]; then
-    url=mariadb://${1}:${2}@${3}
+    url="mariadb://${1}:${2}@${3}?ssl-verify-server-cert=false"
   fi
   if [ -z "${url}" ]; then
     echo "[ERROR] no params passed"
@@ -207,7 +218,8 @@ function dbvim {
     return 1
   fi
   echo "Connecting to $url"
-  DBUI_URL=$url vim -c DBUI -c 'norm jj'
+  DBUI_NAME=$connectionName DBUI_URL=$url \
+    vim -c DBUI -c 'norm jj'
 }
 
 function jwt {
@@ -372,14 +384,14 @@ _xxown() {
   sudo test -e "$targetPath" && {
     # if target exists (should be a dir), check that
     local targetUser=$(sudo stat -c "%U" "$targetPath")
-    eval "sudo ${THE_OP:?} '$1' '$2'"
+    sudo ${THE_OP:?} "$1" "$2"
     # FIXME to support >2 params, need to iterate all the sources to chown
     sudo chown -R $targetUser:$targetUser "$targetPath/$(basename $1)"
     return
   }
   # if target doesn't exist (target is a file), check parent
   local targetUser=$(sudo stat -c "%U" "$(dirname $targetPath)")
-  eval "sudo ${THE_OP:?} '$1' '$2'"
+  sudo ${THE_OP:?} "$1" "$2"
   # FIXME to support >2 params, need to iterate all the sources to chown
   sudo chown -R $targetUser:$targetUser "$targetPath"
 }
