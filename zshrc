@@ -222,14 +222,6 @@ function dbvim {
     vim -c DBUI -c 'norm jj'
 }
 
-function jwt {
-  if [ -n "${1:-}" ]; then
-    echo "$1" | jq -R 'gsub("-";"+") | gsub("_";"/") | split(".") | .[1] | @base64d | fromjson'
-  else
-    jq -R 'gsub("-";"+") | gsub("_";"/") | split(".") | .[1] | @base64d | fromjson'
-  fi
-}
-
 function yay-autoremove {
   # thanks https://www.reddit.com/r/archlinux/comments/3eljbe/aptget_autoremove_for_pacman/ctg2zoh
   sudo pacman -Rcns $(pacman -Qdtq)
@@ -282,7 +274,7 @@ ssh-auth() {
   } )
 
   # if we have an agent PID, but it's wrong, fix it
-  [[ ! -z "$SSH_AGENT_PID" ]] && [[ "$sshAgentPid" != "$SSH_AGENT_PID" ]] && {
+  [[ ! -z "${SSH_AGENT_PID:-}" ]] && [[ "$sshAgentPid" != "$SSH_AGENT_PID" ]] && {
     echo "[SSH] SSH_AGENT_PID($SSH_AGENT_PID) != PID from ps($sshAgentPid)" > /dev/stderr
     rm -f $theFile
     pkill --uid $(id -u) ssh-agent
@@ -298,7 +290,7 @@ ssh-auth() {
   }
 
   # Identify the running SSH agent
-  [[ -z $SSH_AGENT_PID ]] && {
+  [[ -z "${SSH_AGENT_PID:-}" ]] && {
     echo "[SSH] SSH_AGENT_PID is not set, sourcing $theFile" > /dev/stderr
     source $theFile > /dev/null
   }
