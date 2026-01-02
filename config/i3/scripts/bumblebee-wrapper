@@ -6,14 +6,12 @@ cd `dirname "$0"`
 source ~/.profile
 
 ./bumblebee-status/bumblebee-status \
-    -m ping traffic docker_ps_tom pacman load cpu memory sensors pipewire datetime \
+    -m ping traffic docker_ps_tom pacman load cpu memory tom_cputemp pipewire datetime \
     -p \
       datetime.format="%Y-%m-%d %a %H:%M:%S" \
       disk.format="{percent:5.0f}%" \
       engine.workspacewrap=false \
       memory.format="{percent:5.0f}%" \
-      sensors.json=true \
-      sensors.path="k10temp-pci-00c3/Tctl/temp1_input" \
       traffic.exclude="tun,lo,vpn,docker,br,virbr" \
       traffic.graphlen=16 \
       traffic.showname=False \
