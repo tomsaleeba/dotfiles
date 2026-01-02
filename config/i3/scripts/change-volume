@@ -1,27 +1,34 @@
 #!/bin/bash
-# changes volume by a step amount based on the current volume
+# changes volume by a step amount based on the current volume using PipeWire/WirePlumber
 
 direction=${1:?must be "up" or "down"}
 threshold=30
 bigStep=5
 smallStep=3
 
-currVol=$(pulseaudio-ctl full-status | cut -f1 -d ' ')
+# Get current volume as an integer (0-100+)
+# wpctl output looks like "Volume: 0.45"
+currVol=$(wpctl get-volume @DEFAULT_AUDIO_SINK@ | awk '{print int($2 * 100 + 0.5)}')
 
-if [ $currVol -eq $threshold ]; then
+# Determine the step size based on your logic
+if [ "$currVol" -eq "$threshold" ]; then
   if [ "$direction" = "up" ]; then
     step=$bigStep
   else # down
     step=$smallStep
   fi
-  echo "[Equal threshold] Changing volume $direction by $step"
-  pulseaudio-ctl $direction $step
-elif [ $currVol -lt $threshold ]; then
+elif [ "$currVol" -lt "$threshold" ]; then
   step=$smallStep
-  echo "Changing volume $direction by $step"
-  pulseaudio-ctl $direction $step
 else
   step=$bigStep
-  echo "Changing volume $direction by $step"
-  pulseaudio-ctl $direction $step
+fi
+
+echo "Current Volume: $currVol | Changing $direction by $step%"
+
+# Apply the change
+if [ "$direction" = "up" ]; then
+  # '-l 1.5' limits the volume to 150% to prevent speaker damage
+  wpctl set-volume -l 1.5 @DEFAULT_AUDIO_SINK@ "${step}%+"
+else
+  wpctl set-volume @DEFAULT_AUDIO_SINK@ "${step}%-"
 fi

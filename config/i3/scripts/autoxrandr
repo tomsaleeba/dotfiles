@@ -197,6 +197,46 @@ case $(hostname) in
     echo "[ERROR] no handler for display configuration"
     exit 1
     ;;
+  b650m )
+    connectedDisplays=$(xrandr \
+      | grep '\Wconnected' \
+      | awk '{ print $1 }' \
+      | sort \
+      | tr '\n' ' ')
+    echo "Connected displays: $connectedDisplays"
+    if [[ $connectedDisplays == 'DisplayPort-3 DisplayPort-4 HDMI-A-4 ' ]]; then
+      echo 'Desktop: triple monitors from radeon iGPU'
+        gigabyteMonitor="DisplayPort-4"
+        forcedModeName="3840x2160_120.00"
+        if ! xrandr -q | grep -q "$forcedModeName"; then
+          # modeline generated with `cvt 3840 2160 120 -r`
+          xrandr --newmode "$forcedModeName" 1097.25  3840 3888 3920 4000  2160 2163 2168 2287 +hsync -vsync
+          xrandr --addmode "$gigabyteMonitor" "$forcedModeName"
+        fi
+        runXrandr \
+          --output DisplayPort-3 --mode 2560x1440 --rate 180 --scale 1.5 --pos 0x0 --rotate right \
+          --output HDMI-A-4 --mode 2560x1440 --rate 70 --scale 1.25 --pos 2160x0 --rotate normal \
+          --output $gigabyteMonitor --mode $forcedModeName --scale 1 --primary --pos 2160x1800 --rotate normal
+      exit
+    fi
+    if [[ $connectedDisplays == 'DP-1 DP-2 DP-3 ' ]]; then
+      echo 'Desktop: triple monitors from intel dGPU'
+        gigabyteMonitor="DP-1"
+        forcedModeName="3840x2160_120.00"
+        if ! xrandr -q | grep -q "$forcedModeName"; then
+          # modeline generated with `cvt 3840 2160 120 -r`
+          xrandr --newmode "$forcedModeName" 1097.25  3840 3888 3920 4000  2160 2163 2168 2287 +hsync -vsync
+          xrandr --addmode "$gigabyteMonitor" "$forcedModeName"
+        fi
+        runXrandr \
+          --output DP-3 --mode 2560x1440 --rate 180 --scale 1.5 --pos 0x0 --rotate right \
+          --output DP-2 --mode 2560x1440 --rate 120 --scale 1.25 --pos 2160x0 --rotate normal \
+          --output $gigabyteMonitor --mode $forcedModeName --scale 1 --primary --pos 2160x1800 --rotate normal
+      exit
+    fi
+    echo "[ERROR] no handler for display configuration"
+    exit 1
+    ;;
   * )
     echo '[ERROR] unhandled hostname'
     exit 1

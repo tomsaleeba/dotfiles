@@ -6,7 +6,7 @@ cd `dirname "$0"`
 source ~/.profile
 
 ./bumblebee-status/bumblebee-status \
-    -m ping traffic docker_ps_tom pacman load cpu memory sensors pasink datetime \
+    -m ping traffic docker_ps_tom pacman load cpu memory sensors pipewire datetime \
     -p \
       datetime.format="%Y-%m-%d %a %H:%M:%S" \
       disk.format="{percent:5.0f}%" \
