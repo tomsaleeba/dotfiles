@@ -167,7 +167,7 @@ bar {
   font pango:DejaVu Sans Mono 9
   status_command ~/.config/i3/scripts/bumblebee-status/bumblebee-status \
     -m \
-    redshift nvidiagpu cpu memory datetimetz:dct datetimetz:darg datetimetz:dutc datetimetz:dind datetime:dloc \
+    redshift tom_intelgpu cpu memory datetimetz:dct datetimetz:darg datetimetz:dutc datetimetz:dind datetime:dloc \
     -p \
     dct.format='%H:%M %Z' \
     dct.timezone='America/Chicago' \
@@ -179,8 +179,7 @@ bar {
     dind.timezone='Asia/Kolkata' \
     dloc.format='%Y-%m-%d %H:%M:%S %Z (local)' \
     memory.format="{used}/{total} ({percent:3.0f}%)" \
-    memory.byte_fmt="{:2.1f}" \
-    nvidiagpu.format="{temp}°C GPU: u:{gpu_usage_pct:>2}%/cl:{clock_gpu_usage:>2}% Mem: u:{mem_usage_pct:>2}%/io:{mem_io_pct:>2}%/cl:{clock_mem_usage:>2}%"
+    memory.byte_fmt="{:2.1f}"
 }
 
 # move current workspace between monitors
@@ -203,11 +202,14 @@ focus_follows_mouse yes
 bindsym XF86AudioRaiseVolume exec --no-startup-id ~/.config/i3/scripts/change-volume up
 bindsym XF86AudioLowerVolume exec --no-startup-id ~/.config/i3/scripts/change-volume down
 bindsym XF86AudioMute exec --no-startup-id pulseaudio-ctl mute
+bindsym XF86AudioPlay exec --no-startup-id playerctl play-pause
 
 bindsym XF86MonBrightnessUp exec --no-startup-id ~/.config/i3/scripts/change-brightness up
 bindsym XF86MonBrightnessDown exec --no-startup-id ~/.config/i3/scripts/change-brightness down
 
 bindsym XF86Display exec --no-startup-id ~/.config/i3/scripts/autoxrandr
+
+bindsym $mod+x exec --no-startup-id /zeta/git/nerd-dictation/docker-dictate.sh toggle
 
 exec_always --no-startup-id ~/.config/i3/scripts/autoxrandr
 exec_always --no-startup-id bash ~/.config/i3/scripts/xinput-config
