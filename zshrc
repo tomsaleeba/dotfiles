@@ -251,7 +251,7 @@ cdtemp() {
   cd `mktemp --directory $fragment`
 }
 
-# ssh-auth needs to be on PATH
+alias ssh-auth='eval $(ssh-auth-helper)'
 git() {
   if [ -t 1 ]; then
     # only call for interactive sessions

@@ -56,5 +56,9 @@ ssh_auth() {
 }
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+  # Script is being executed (not sourced)
+  # Run the function, then output the env vars for the caller to eval
   ssh_auth
+  echo "export SSH_AUTH_SOCK=$SSH_AUTH_SOCK"
+  echo "export SSH_AGENT_PID=$SSH_AGENT_PID"
 fi
