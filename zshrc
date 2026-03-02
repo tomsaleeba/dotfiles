@@ -251,60 +251,7 @@ cdtemp() {
   cd `mktemp --directory $fragment`
 }
 
-# thanks https://stackoverflow.com/a/24347344/1410035
-ssh-auth() {
-  # make sure your ssh keys are added with: ssh-add <key>
-  local theFile=/run/user/$(id -u)/ssh-agent.sh
-  [ "$(uname)" = "Darwin" ] && {
-    local sshAgentPid=$(ps -A | grep ssh-agent | awk '{print $1}')
-    return # FIXME remove line, actually handle for macOS
-  } || {
-    local sshAgentPid=`pgrep -U $(id -u) ssh-agent`
-  }
-
-  # if we have a file, source it
-  [[ -f "$theFile" ]] && {
-    # echo "[SSH] Sourcing $theFile" > /dev/stderr
-    source $theFile > /dev/null
-  } || ( [[ ! -z "$sshAgentPid" ]] && {
-    # if the agent is running, but there's no file (not sure why), fix the situation
-    echo "[SSH] ssh-agent is running, but $theFile does not exist" > /dev/stderr
-    pkill --uid $(id -u) ssh-agent
-    unset SSH_AGENT_PID
-  } )
-
-  # if we have an agent PID, but it's wrong, fix it
-  [[ ! -z "${SSH_AGENT_PID:-}" ]] && [[ "$sshAgentPid" != "$SSH_AGENT_PID" ]] && {
-    echo "[SSH] SSH_AGENT_PID($SSH_AGENT_PID) != PID from ps($sshAgentPid)" > /dev/stderr
-    rm -f $theFile
-    pkill --uid $(id -u) ssh-agent
-    unset SSH_AGENT_PID
-  } || {
-    # echo "[SSH] SSH_AGENT_PID is not set or SSH_AGENT_PID($SSH_AGENT_PID) == PID from ps($sshAgentPid)" > /dev/stderr
-  }
-
-  # Start the SSH agent only if not running
-  [[ -z "$sshAgentPid" ]] && {
-    echo "[SSH] starting ssh-agent" > /dev/stderr
-    echo $(ssh-agent) > $theFile
-  }
-
-  # Identify the running SSH agent
-  [[ -z "${SSH_AGENT_PID:-}" ]] && {
-    echo "[SSH] SSH_AGENT_PID is not set, sourcing $theFile" > /dev/stderr
-    source $theFile > /dev/null
-  }
-
-  local loadedKeyCount=$(ssh-add -l | grep SHA | wc -l)
-  if [ $loadedKeyCount = 0 ]; then
-    if [ -t 1 ] ; then  # output is a terminal (not a pipe), thanks https://stackoverflow.com/a/911213/1410035
-      >&2 echo "[WARN] zero keys are loaded in ssh-agent"
-    fi
-  fi
-
-  # be sure to add your keys in ~/.ssh/config with AddKeysToAgent and they'll be lazy loaded
-  # echo "[SSH] SSH_AGENT_PID=$SSH_AGENT_PID" > /dev/stderr
-}
+# ssh-auth needs to be on PATH
 git() {
   if [ -t 1 ]; then
     # only call for interactive sessions
