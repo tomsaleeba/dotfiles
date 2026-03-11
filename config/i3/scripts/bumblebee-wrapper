@@ -6,13 +6,13 @@ cd `dirname "$0"`
 source ~/.profile
 
 ./bumblebee-status/bumblebee-status \
-    -m ping traffic docker_ps_tom pacman load cpu memory tom_cputemp pipewire datetime \
+    -m xprintidle_tom ping traffic docker_ps_tom pacman load cpu memory tom_cputemp pipewire datetime \
     -p \
       datetime.format="%Y-%m-%d %a %H:%M:%S" \
       disk.format="{percent:5.0f}%" \
       engine.workspacewrap=false \
       memory.format="{percent:5.0f}%" \
-      traffic.exclude="tun,lo,vpn,docker,br,virbr" \
+      traffic.exclude="tun,lo,vpn,docker,br,virbr,wg" \
       traffic.graphlen=16 \
       traffic.showname=False \
       traffic.states="^down" \
