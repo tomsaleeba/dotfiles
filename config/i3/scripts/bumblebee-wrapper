@@ -12,7 +12,7 @@ source ~/.profile
       disk.format="{percent:5.0f}%" \
       engine.workspacewrap=false \
       memory.format="{percent:5.0f}%" \
-      traffic.exclude="tun,lo,vpn,docker,br,virbr,wg" \
+      traffic.exclude="tun,lo,vpn,docker,br,virbr,wg,hp800" \
       traffic.graphlen=16 \
       traffic.showname=False \
       traffic.states="^down" \
