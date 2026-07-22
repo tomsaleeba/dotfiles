@@ -13,34 +13,34 @@ ssh_auth() {
 
   # if we have a file, source it
   [[ -f "$theFile" ]] && {
-    # echo "[SSH] Sourcing $theFile" > /dev/stderr
+    # echo "[SSH] Sourcing $theFile" >&2
     source $theFile > /dev/null
   } || ( [[ ! -z "$sshAgentPid" ]] && {
     # if the agent is running, but there's no file (not sure why), fix the situation
-    echo "[SSH] ssh-agent is running, but $theFile does not exist" > /dev/stderr
+    echo "[SSH] ssh-agent is running, but $theFile does not exist" >&2
     pkill --uid $(id -u) ssh-agent
     unset SSH_AGENT_PID
   } )
 
   # if we have an agent PID, but it's wrong, fix it
   [[ ! -z "${SSH_AGENT_PID:-}" ]] && [[ "$sshAgentPid" != "$SSH_AGENT_PID" ]] && {
-    echo "[SSH] SSH_AGENT_PID($SSH_AGENT_PID) != PID from ps($sshAgentPid)" > /dev/stderr
+    echo "[SSH] SSH_AGENT_PID($SSH_AGENT_PID) != PID from ps($sshAgentPid)" >&2
     rm -f $theFile
     pkill --uid $(id -u) ssh-agent
     unset SSH_AGENT_PID
 #  } || {
-#    echo "[SSH] SSH_AGENT_PID is not set or SSH_AGENT_PID($SSH_AGENT_PID) == PID from ps($sshAgentPid)" > /dev/stderr
+#    echo "[SSH] SSH_AGENT_PID is not set or SSH_AGENT_PID($SSH_AGENT_PID) == PID from ps($sshAgentPid)" >&2
   }
 
   # Start the SSH agent only if not running
   [[ -z "$sshAgentPid" ]] && {
-    echo "[SSH] starting ssh-agent" > /dev/stderr
+    echo "[SSH] starting ssh-agent" >&2
     echo $(ssh-agent) > $theFile
   }
 
   # Identify the running SSH agent
   [[ -z "${SSH_AGENT_PID:-}" ]] && {
-    echo "[SSH] SSH_AGENT_PID is not set, sourcing $theFile" > /dev/stderr
+    echo "[SSH] SSH_AGENT_PID is not set, sourcing $theFile" >&2
     source $theFile > /dev/null
   }
 
@@ -52,7 +52,7 @@ ssh_auth() {
   fi
 
   # be sure to add your keys in ~/.ssh/config with AddKeysToAgent and they'll be lazy loaded
-  # echo "[SSH] SSH_AGENT_PID=$SSH_AGENT_PID" > /dev/stderr
+  # echo "[SSH] SSH_AGENT_PID=$SSH_AGENT_PID" >&2
 }
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
