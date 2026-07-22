@@ -3,7 +3,7 @@ add-highlighter global/ wrap
 add-highlighter global/ line '%val{cursor_line}' default,rgb:444444
 add-highlighter global/ show-matching
 add-highlighter global/ regex \b(TODO|FIXME|XXX|NOTE)\b 0:default+rb
-colorscheme gruvbox
+#colorscheme gruvbox
 
 set-option global autowrap_column 80
 set-option global tabstop 2
@@ -61,39 +61,39 @@ define-command cleanup-whitespace %{
 }
 hook global BufWritePre .* cleanup-whitespace
 
-source "%val{config}/plugins/plug.kak/rc/plug.kak"
+#source "%val{config}/plugins/plug.kak/rc/plug.kak"
 
-plug "andreyorst/fzf.kak" %{
-  map global normal <c-p> ': fzf-mode<ret>'
-} defer fzf %{
-  set-option global fzf_use_main_selection false
-}
-
-# FIXME doesn't work yet, closes instantly
-define-command -hidden -override -docstring "wrapper command to create new horizontal split" \
-  fzf-horizontal -params .. %{ evaluate-commands %sh{
-      #tmux-terminal-horizontal kak -c %val{session} -e "%arg{@}"
-      # kitty-new-horizontal "%arg{@}"
-      kitty @ launch --no-response --location=vsplit --type=window --cwd "$PWD" \
-        kak -c $kak_session $kakoune_args -e "$@"
-  }}
-
-plug "danr/kakoune-easymotion" %{
-  map global user , ': easy-motion-char<ret>' -docstring 'easy motion char'
-  # https://github.com/danr/kakoune-easymotion/issues/27
-  set-face global EasyMotionForeground rgb:fdf6e3,rgb:268bd2
-}
-
-plug "caksoylar/kakoune-smooth-scroll" config %{
-  hook global WinCreate .* %{
-    # using these nested hooks as per https://github.com/caksoylar/kakoune-smooth-scroll#configuration
-    hook -once window WinDisplay .* %{
-      smooth-scroll-enable
-    }
-  }
-}
-
-plug "ABuffSeagull/kakoune-vue" # FIXME doesn't seem to have any effect
+#plug "andreyorst/fzf.kak" %{
+#  map global normal <c-p> ': fzf-mode<ret>'
+#} defer fzf %{
+#  set-option global fzf_use_main_selection false
+#}
+#
+## FIXME doesn't work yet, closes instantly
+#define-command -hidden -override -docstring "wrapper command to create new horizontal split" \
+#  fzf-horizontal -params .. %{ evaluate-commands %sh{
+#      #tmux-terminal-horizontal kak -c %val{session} -e "%arg{@}"
+#      # kitty-new-horizontal "%arg{@}"
+#      kitty @ launch --no-response --location=vsplit --type=window --cwd "$PWD" \
+#        kak -c $kak_session $kakoune_args -e "$@"
+#  }}
+#
+#plug "danr/kakoune-easymotion" %{
+#  map global user , ': easy-motion-char<ret>' -docstring 'easy motion char'
+#  # https://github.com/danr/kakoune-easymotion/issues/27
+#  set-face global EasyMotionForeground rgb:fdf6e3,rgb:268bd2
+#}
+#
+#plug "caksoylar/kakoune-smooth-scroll" config %{
+#  hook global WinCreate .* %{
+#    # using these nested hooks as per https://github.com/caksoylar/kakoune-smooth-scroll#configuration
+#    hook -once window WinDisplay .* %{
+#      smooth-scroll-enable
+#    }
+#  }
+#}
+#
+#plug "ABuffSeagull/kakoune-vue" # FIXME doesn't seem to have any effect
 
 source /home/tom/git/kakoune-kitty/kitty.kak
 define-command sp 'exec :kitty-new-vertical<ret>'
@@ -112,6 +112,14 @@ def -params 1 extend-line-up %{
       }
         exec '<a-;><a-X>'
 }
-map global normal x ':extend-line-down %val{count}<ret>'
-map global normal X ':extend-line-up %val{count}<ret>'
+#map global normal x ':extend-line-down %val{count}<ret>'
+#map global normal X ':extend-line-up %val{count}<ret>'
 
+# https://github.com/mawww/kakoune/pull/4431#issuecomment-967868499
+define-command print-working-directory -docstring %{
+  print the server's current working directory to the status line
+} %{
+  echo %sh{echo $PWD}
+}
+alias global pwd print-working-directory
+alias global cwd print-working-directory

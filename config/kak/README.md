@@ -31,6 +31,11 @@
  - change surrounding. I can do `<a-a> ' s ' <ret> c "` but that sucks a bit, check out https://github.com/h-youhei/kakoune-surround
  - toggle comments
  - can I use the tricks from https://dev.to/staab/open-output-in-a-new-buffer-2dak to get `ag` working? Would be nice to feed it through fzf so a selection opens that line
+ - how to clear current line, but not fully remove. Basically replace all of the current
+   line with a newline char. `xd`, `xc` kill the whole line. `ghGld` achieves it but is a
+   bit longer than `C`
+ - how to kill previous word `<c-w>` in insert mode
+ - currently no folding, follow progress at https://github.com/mawww/kakoune/wiki/Migrating-from-Vim#code-folding
 
 # Pros
  - syntax highlighting for .vue files out-of-the-box
