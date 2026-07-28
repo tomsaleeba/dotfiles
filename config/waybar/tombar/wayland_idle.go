@@ -58,6 +58,32 @@ const (
 	evNotifResumed    = 1 // ext_idle_notification_v1.resumed
 )
 
+const (
+	// idleShownAfter is how long a gap in input has to last before we start
+	// showing it at all. Below this, it's treated as noise (e.g. the couple
+	// of seconds between waking the screen and actually starting to type).
+	idleShownAfter = 5 * time.Second
+
+	// idleBigEnough is the minimum duration for an idle period to be
+	// remembered in awayHistory. Below this, the previous "away" reading is
+	// left alone once the idle period ends - only genuinely-away stretches
+	// (e.g. long enough to matter for time tracking) get remembered.
+	idleBigEnough = 5 * time.Minute
+
+	// awayHistoryLen is how many past qualifying away periods we keep
+	// around. The main bar text always shows only the most recent one, but
+	// a short history means a brief break (e.g. a 5 minute one right after a
+	// longer one) doesn't erase the one you actually needed to see before
+	// you got a chance to read it - it's still one hover away in the
+	// tooltip.
+	awayHistoryLen = 3
+
+	// clockFmt is the Go reference-time layout used for all on-screen clock
+	// times: 24h, zero-padded, so every rendering is exactly 5 characters
+	// ("09:03", "23:47", ...) and the widget never jiggles.
+	clockFmt = "15:04"
+)
+
 // dialWayland connects to the compositor's Wayland unix socket, using the
 // same environment variables the reference client libraries use.
 func dialWayland() (net.Conn, error) {
@@ -165,6 +191,49 @@ func (c *wlConn) recv() (*wlMessage, error) {
 
 func idleFatal(msg string) {
 	output{Text: fmt.Sprintf("idle %6s", "n/a"), Class: "critical", Tooltip: msg}.print()
+}
+
+// awayPeriod is one remembered "you were away" stretch: from the moment
+// input stopped to the moment it resumed. We show clock times (not a
+// duration) because a duration goes stale the moment you don't read it
+// immediately - "away 20m" means something different if read the instant
+// you wake the screen versus three minutes later. Clock times don't have
+// that problem: "10:00→10:20" means the same thing whenever you look at it.
+type awayPeriod struct {
+	start, end time.Time
+}
+
+// printAway renders the most recent away period (if any) as the fixed-width
+// main bar text, with the last few periods (newest first) listed in the
+// tooltip - see awayHistoryLen for why we keep more than just the latest
+// one. No "away" label: it's the same 11-character width as the "idle"
+// state's text ("idle 5m12s"-shaped), and the content (a clock range vs. the
+// literal word "idle") is unambiguous on its own.
+//
+// A tooltip is always set, even with no history yet - otherwise a hover that
+// silently does nothing looks indistinguishable from tooltips being broken.
+//
+// Like every other tombar widget text, this must stay a fixed width so
+// waybar doesn't jiggle neighbouring modules around as the value changes -
+// see the fixed-width note in main.go's package comment.
+func printAway(history []awayPeriod) {
+	if len(history) == 0 {
+		// Keep the same width as a real reading ("HH:MM" + arrow + "HH:MM",
+		// 11 characters) so the widget doesn't jiggle once the first real
+		// value lands.
+		output{
+			Text:    fmt.Sprintf("%11s", "--"),
+			Tooltip: fmt.Sprintf("No breaks recorded yet this session (needs %v+ idle)", idleBigEnough),
+		}.print()
+		return
+	}
+	latest := history[0]
+	text := fmt.Sprintf("%s→%s", latest.start.Format(clockFmt), latest.end.Format(clockFmt))
+	lines := make([]string, len(history))
+	for i, p := range history {
+		lines[i] = fmt.Sprintf("%s → %s (%s)", p.start.Format(clockFmt), p.end.Format(clockFmt), formatIdle(p.end.Sub(p.start).Milliseconds()))
+	}
+	output{Text: text, Tooltip: strings.Join(lines, "\n")}.print()
 }
 
 func idle() {
@@ -275,13 +344,18 @@ registryLoop:
 		return
 	}
 
-	// Nothing has happened yet this session.
-	output{Text: fmt.Sprintf("away %6s", "--")}.print()
+	// awayHistory holds the last few qualifying away periods, newest first.
+	// Nothing has happened yet this session, so it starts empty.
+	var awayHistory []awayPeriod
+	printAway(awayHistory)
 
 	isIdle := false
 	var idleSince time.Time
-	var lastAway time.Duration
-	haveLastAway := false
+	// Once an idle period has lasted at least idleShownAfter, we start
+	// showing it ticking up live ("idle 1m05s", ...). Below that, a blip is
+	// assumed to be noise (see below) and shown as nothing at all, so the
+	// "away" line from the *previous* idle period stays fully readable.
+	shownThisIdle := false
 
 	for {
 		_ = conn.SetReadDeadline(time.Now().Add(1 * time.Second))
@@ -289,7 +363,11 @@ registryLoop:
 		if err != nil {
 			if ne, ok := err.(net.Error); ok && ne.Timeout() {
 				if isIdle {
-					output{Text: fmt.Sprintf("idle %s", formatIdle(time.Since(idleSince).Milliseconds())), Class: "warning"}.print()
+					d := time.Since(idleSince)
+					if shownThisIdle || d >= idleShownAfter {
+						shownThisIdle = true
+						output{Text: fmt.Sprintf("idle %s", formatIdle(d.Milliseconds())), Class: "warning"}.print()
+					}
 				}
 				continue
 			}
@@ -300,18 +378,45 @@ registryLoop:
 		}
 		switch {
 		case msg.objID == notifID && msg.opcode == evNotifIdled:
+			// With a 0ms notify threshold, the compositor reports "idled"
+			// the instant there's *any* gap in input - including the couple
+			// of seconds it naturally takes you to notice the screen woke
+			// up and start typing again after moving the mouse to wake it.
+			// We deliberately don't print anything for the first
+			// idleShownAfter of a new idle period, so that a trivial blip
+			// right after waking can't instantly clobber the "away
+			// HH:MM→HH:MM" line you just woke the screen to go read.
 			isIdle = true
 			idleSince = time.Now()
-			output{Text: fmt.Sprintf("idle %s", formatIdle(0)), Class: "warning"}.print()
+			shownThisIdle = false
 		case msg.objID == notifID && msg.opcode == evNotifResumed:
 			if isIdle {
-				lastAway = time.Since(idleSince)
-				haveLastAway = true
+				now := time.Now()
+				d := now.Sub(idleSince)
+				if d >= idleBigEnough {
+					// Long enough to be worth remembering - this is the
+					// break you actually want to see (e.g. to correct a
+					// forgotten timewarrior timer). Newest first, capped at
+					// awayHistoryLen so a short break shortly after a longer
+					// one doesn't erase the longer one before you've had a
+					// chance to read it - see awayHistoryLen.
+					awayHistory = append([]awayPeriod{{start: idleSince, end: now}}, awayHistory...)
+					if len(awayHistory) > awayHistoryLen {
+						awayHistory = awayHistory[:awayHistoryLen]
+					}
+					printAway(awayHistory)
+				} else if shownThisIdle {
+					// We'd started showing this one ticking (it ran past
+					// idleShownAfter) but it turned out to be short-lived -
+					// not "big enough" to remember, so put the previous
+					// away reading back on screen instead of leaving the
+					// now-stale ticking value sitting there.
+					printAway(awayHistory)
+				}
+				// Otherwise: never displayed (pure blip), nothing to
+				// restore - the previous "away" line was never touched.
 			}
 			isIdle = false
-			if haveLastAway {
-				output{Text: fmt.Sprintf("away %s", formatIdle(lastAway.Milliseconds()))}.print()
-			}
 		case msg.objID == wlDisplayID && msg.opcode == evDisplayError:
 			idleFatal("Wayland protocol error")
 			return

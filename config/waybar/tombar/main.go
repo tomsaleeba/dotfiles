@@ -17,6 +17,12 @@
 // neighbouring widgets around as values change; see style.css for the CSS
 // min-width belt-and-suspenders that covers the rest.
 //
+// IMPORTANT for anyone (human or agent) changing or adding a widget: every
+// module's Text must render at a constant width across all the states it can
+// be in (including placeholder/error states like "n/a" or "--"). Compute the
+// padding from the widest possible value up front, and pad shorter/placeholder
+// values out to match - don't just let short strings render narrower.
+//
 // Build: CGO_ENABLED=0 go build -o tombar .
 // Usage: tombar <idle|ping|docker|pacman|load|net|cpufreq>
 package main

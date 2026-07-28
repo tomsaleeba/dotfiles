@@ -51,7 +51,7 @@ window#waybar {
  * centre themselves within the box by default, which is fine here since
  * there's barely any slack left to notice. */
 
-#custom-idle    { min-width: 85px; }  /* "away  45m12s" / "idle    5m12s" - 11 chars */
+#custom-idle    { min-width: 85px; }  /* "10:00→10:20" / "idle    5m12s" - 11 chars */
 #custom-ping    { min-width: 50px; }  /* "  36ms" / "  down" - 6 chars */
 #custom-net     { min-width: 160px; } /* "  0.0B/s" + 12-char sparkline - 21 chars */
 #custom-docker  { min-width: 80px; }  /* "docker:  0" - 10 chars */
