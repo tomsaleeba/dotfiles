@@ -1,0 +1,147 @@
+// waybar config replicating the primary-monitor i3/bumblebee-status bar.
+// Native waybar modules are used where possible; the rest (idle, ping,
+// physical-link network throughput, docker, pacman, load, cpu freq) are fed
+// by the small `tombar` helper built from ./tombar/main.go:
+//   cd ~/.config/waybar/tombar && CGO_ENABLED=0 go build -o tombar .
+//
+// All widgets are given a fixed min-width in style.css (and tombar pads its
+// own text to a fixed width too) so the bar doesn't jump around as values
+// change length.
+{
+    "layer": "top",
+    "position": "top",
+    "height": 20,
+    "spacing": 0,
+
+    "modules-left": ["niri/workspaces"],
+    "modules-center": [],
+    "modules-right": [
+        "custom/idle",
+        "custom/ping",
+        "custom/net",
+        "custom/docker",
+        "custom/pacman",
+        "custom/load",
+        "cpu",
+        "custom/cpufreq",
+        "memory",
+        "temperature",
+        "wireplumber",
+        "tray",
+        "clock#utc",
+        "clock#central",
+        "clock#india",
+        "clock#local"
+    ],
+
+    "niri/workspaces": {
+        "format": "{index}"
+    },
+
+    // Local time + date, pinned to the far right edge of the bar.
+    "clock#local": {
+        "format": "{:%Y-%m-%d %a %H:%M:%S}",
+        "interval": 1
+    },
+
+    // Reference-only clocks (time only, no date - you know it's "today" or
+    // "yesterday" relative to local, just need the clock face) for the
+    // timezones the old bumblebee bar showed on the secondary monitor.
+    "clock#utc": {
+        "timezone": "UTC",
+        "format": "{:%H:%M %Z}",
+        "interval": 1
+    },
+
+    "clock#central": {
+        "timezone": "America/Chicago",
+        "format": "{:%H:%M %Z}",
+        "interval": 1
+    },
+
+    "clock#india": {
+        "timezone": "Asia/Kolkata",
+        "format": "{:%H:%M %Z}",
+        "interval": 1
+    },
+
+    "custom/idle": {
+        // Continuous mode (no "interval"): tombar itself is a long-running
+        // Wayland client that prints a new line whenever idle/active state
+        // changes (or once a second while actively idle), so waybar just
+        // needs to launch it once and read stdout. restart-interval relaunches
+        // it if it ever dies (e.g. niri restarting).
+        "exec": "~/.config/waybar/tombar/tombar idle",
+        "return-type": "json",
+        "restart-interval": 15
+    },
+
+    "custom/ping": {
+        "exec": "~/.config/waybar/tombar/tombar ping",
+        "return-type": "json",
+        "interval": 60
+    },
+
+    "custom/net": {
+        // Scrolling ascii histogram of throughput on the one "physical"
+        // network link (real hardware NIC only - loopback, docker
+        // bridges/veths, and VPN tunnel interfaces are all excluded; VPN
+        // traffic still shows up here since it rides over the physical
+        // link underneath). 24 samples at this 5s interval = last 2 minutes.
+        "exec": "~/.config/waybar/tombar/tombar net",
+        "return-type": "json",
+        "interval": 5
+    },
+
+    "custom/docker": {
+        "exec": "~/.config/waybar/tombar/tombar docker",
+        "return-type": "json",
+        "interval": 5
+    },
+
+    "custom/pacman": {
+        "exec": "~/.config/waybar/tombar/tombar pacman",
+        "return-type": "json",
+        "interval": 1800
+    },
+
+    "custom/load": {
+        "exec": "~/.config/waybar/tombar/tombar load",
+        "return-type": "json",
+        "interval": 5
+    },
+
+    "cpu": {
+        "format": "CPU {usage}%",
+        "interval": 5
+    },
+
+    "custom/cpufreq": {
+        "exec": "~/.config/waybar/tombar/tombar cpufreq",
+        "return-type": "json",
+        "interval": 5
+    },
+
+    "memory": {
+        "format": "MEM {percentage}%",
+        "interval": 5
+    },
+
+    "temperature": {
+        // TODO: point this at the right hwmon zone, e.g. run:
+        //   for f in /sys/class/hwmon/hwmon*/name; do echo "$f: $(cat $f)"; done
+        // and pick the one for the CPU (k10temp / coretemp), then set:
+        // "hwmon-path": "/sys/class/hwmon/hwmonX/temp1_input",
+        "critical-threshold": 85,
+        "format": "{temperatureC}°C"
+    },
+
+    "wireplumber": {
+        "format": "VOL {volume}%",
+        "format-muted": "MUTED"
+    },
+
+    "tray": {
+        "spacing": 8
+    }
+}

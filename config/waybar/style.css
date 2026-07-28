@@ -1,0 +1,129 @@
+/* Minimal style, alternating gruvbox-dark colours (dark / green),
+ * mirroring the "cycle" section of config/bumblebee-status/themes/gruvbox-tom.json
+ *
+ * Every widget gets a fixed min-width so the bar doesn't jump around as
+ * values change length. tombar also pads its own text to a fixed width;
+ * these min-widths are a safety net on top of that (covers the very first
+ * sample before state exists, font metric quirks, etc).
+ */
+
+* {
+    font-family: "DejaVu Sans Mono";
+    font-size: 12px;
+    min-height: 0;
+    /* The active GTK theme (not this stylesheet) otherwise adds its own
+     * default margin around every widget/button - that's almost certainly
+     * the "extra" gap beyond our own padding below. Zero it out everywhere
+     * and control all spacing explicitly from here. */
+    margin: 0;
+}
+
+window#waybar {
+    background: #1d2021;
+    color: #ebdbb2;
+}
+
+#workspaces,
+#custom-idle,
+#custom-ping,
+#custom-net,
+#custom-docker,
+#custom-pacman,
+#custom-load,
+#cpu,
+#custom-cpufreq,
+#memory,
+#temperature,
+#wireplumber,
+#tray,
+#clock.utc,
+#clock.central,
+#clock.india,
+#clock.local {
+    padding: 0 1px;
+}
+
+/* Fixed widths, tightened to actual character counts of each widget's fixed
+ * text (~7.3px/char for 12px DejaVu Sans Mono) plus a couple px of slack -
+ * not generous "safety net" sizes, since tombar's own padding already
+ * guarantees the text length barely varies. GTK CSS has no `text-align`
+ * (that's a browser-CSS-ism, not supported by GTK's CSS engine) - labels
+ * centre themselves within the box by default, which is fine here since
+ * there's barely any slack left to notice. */
+
+#custom-idle    { min-width: 85px; }  /* "away  45m12s" / "idle    5m12s" - 11 chars */
+#custom-ping    { min-width: 50px; }  /* "  36ms" / "  down" - 6 chars */
+#custom-net     { min-width: 160px; } /* "  0.0B/s" + 12-char sparkline - 21 chars */
+#custom-docker  { min-width: 80px; }  /* "docker:  0" - 10 chars */
+#custom-pacman  { min-width: 65px; }  /* "pkg:   0" - 8 chars */
+#custom-load    { min-width: 130px; } /* " 1.14/ 0.95/ 0.87" - 17 chars */
+#cpu            { min-width: 65px; }  /* "CPU 100%" worst case - 8 chars */
+#custom-cpufreq { min-width: 55px; }  /* " 4.0GHz" - 7 chars */
+#memory         { min-width: 65px; }  /* "MEM 100%" worst case - 8 chars */
+#temperature    { min-width: 42px; }  /* "33°C".."100°C" - 4-5 chars */
+#wireplumber    { min-width: 65px; }  /* "VOL 100%" worst case - 8 chars */
+#clock.utc,
+#clock.central,
+#clock.india    { min-width: 70px; }  /* "14:32 UTC" - 9 chars */
+#clock.local    { min-width: 175px; } /* "2026-07-28 Tue 14:32:05" - 23 chars */
+
+/* Alternating dark/green segments, left to right across the whole bar. */
+
+#workspaces,
+#custom-ping,
+#custom-load,
+#custom-cpufreq,
+#temperature,
+#tray,
+#clock.central,
+#clock.local {
+    background: #1d2021;
+    color: #ebdbb2;
+}
+
+#custom-idle,
+#custom-net,
+#custom-pacman,
+#cpu,
+#memory,
+#wireplumber,
+#clock.utc,
+#clock.india {
+    background: #98971a;
+    color: #1d2021;
+}
+
+#workspaces button {
+    padding: 0 1px;
+    margin: 0;
+    color: #ebdbb2;
+    background: transparent;
+}
+
+#workspaces button.active {
+    color: #1d2021;
+    background: #b8bb26;
+}
+
+/* Status overrides - these take priority over the alternating base colours
+ * above regardless of which segment they land on. */
+
+#custom-idle.critical,
+#custom-ping.critical,
+#custom-net.critical,
+#custom-docker.critical,
+#custom-pacman.critical,
+#custom-load.critical,
+#custom-cpufreq.critical,
+#temperature.critical {
+    background: #cc241d;
+    color: #fbf1c7;
+}
+
+#custom-ping.warning,
+#custom-docker.warning,
+#custom-pacman.warning,
+#wireplumber.muted {
+    background: #d79921;
+    color: #1d2021;
+}

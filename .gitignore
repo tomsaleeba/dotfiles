@@ -1,5 +1,9 @@
 *.bak
 
+# compiled tombar binary (build from config/waybar/tombar/main.go with
+# `CGO_ENABLED=0 go build -o tombar .`)
+config/waybar/tombar/tombar
+
 # Emacs things
 \#*#
 
