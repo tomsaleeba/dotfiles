@@ -27,6 +27,8 @@
         "memory",
         "temperature",
         "wireplumber",
+        "battery",
+        "idle_inhibitor",
         "tray",
         "clock#utc",
         "clock#central",
@@ -139,6 +141,35 @@
     "wireplumber": {
         "format": "VOL {volume}%",
         "format-muted": "MUTED"
+    },
+
+    "battery": {
+        // No icon font is installed for this bar (see style.css - plain
+        // DejaVu Sans Mono), so states are spelled out as text rather than
+        // glyphs, same as every other widget here.
+        "states": {
+            "warning": 30,
+            "critical": 15
+        },
+        "format": "BAT {capacity}%",
+        "format-charging": "CHG {capacity}%",
+        "format-plugged": "AC {capacity}%",
+        "format-full": "FULL {capacity}%",
+        "tooltip-format": "{timeTo}"
+    },
+
+    // The "eye" toggle from the default waybar config: click to inhibit the
+    // compositor's idle/screen-lock timeout (e.g. while watching a video),
+    // click again to let it sleep normally. Needs the compositor to support
+    // idle-inhibit-unstable-v1 (niri does).
+    "idle_inhibitor": {
+        "format": "{icon}",
+        "format-icons": {
+            "activated": "AWAKE",
+            "deactivated": "SLEEP"
+        },
+        "tooltip-format-activated": "Idle inhibitor ON - screen will not sleep (click to turn off)",
+        "tooltip-format-deactivated": "Idle inhibitor off - screen sleeps normally (click to keep awake)"
     },
 
     "tray": {

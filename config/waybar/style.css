@@ -35,6 +35,8 @@ window#waybar {
 #memory,
 #temperature,
 #wireplumber,
+#battery,
+#idle_inhibitor,
 #tray,
 #clock.utc,
 #clock.central,
@@ -62,6 +64,8 @@ window#waybar {
 #memory         { min-width: 65px; }  /* "MEM 100%" worst case - 8 chars */
 #temperature    { min-width: 42px; }  /* "33°C".."100°C" - 4-5 chars */
 #wireplumber    { min-width: 65px; }  /* "VOL 100%" worst case - 8 chars */
+#battery        { min-width: 75px; }  /* "FULL 100%" worst case - 9 chars */
+#idle_inhibitor { min-width: 45px; }  /* "AWAKE" / "SLEEP" - 5 chars */
 #clock.utc,
 #clock.central,
 #clock.india    { min-width: 70px; }  /* "14:32 UTC" - 9 chars */
@@ -74,6 +78,7 @@ window#waybar {
 #custom-load,
 #custom-cpufreq,
 #temperature,
+#battery,
 #tray,
 #clock.central,
 #clock.local {
@@ -87,6 +92,7 @@ window#waybar {
 #cpu,
 #memory,
 #wireplumber,
+#idle_inhibitor,
 #clock.utc,
 #clock.india {
     background: #98971a;
@@ -115,7 +121,8 @@ window#waybar {
 #custom-pacman.critical,
 #custom-load.critical,
 #custom-cpufreq.critical,
-#temperature.critical {
+#temperature.critical,
+#battery.critical {
     background: #cc241d;
     color: #fbf1c7;
 }
@@ -123,7 +130,16 @@ window#waybar {
 #custom-ping.warning,
 #custom-docker.warning,
 #custom-pacman.warning,
-#wireplumber.muted {
+#wireplumber.muted,
+#battery.warning {
+    background: #d79921;
+    color: #1d2021;
+}
+
+/* idle_inhibitor toggled on ("AWAKE") is a deliberate, active choice worth
+ * standing out for - same warning colour as the other "pay attention"
+ * states above. */
+#idle_inhibitor.activated {
     background: #d79921;
     color: #1d2021;
 }
